@@ -1,2 +1,2 @@
 # TimeTrackingApp
-Time Tracknig Desktop application that conencts to MS CRM.
+Time tracknig desktop application that connects to MS CRM.
