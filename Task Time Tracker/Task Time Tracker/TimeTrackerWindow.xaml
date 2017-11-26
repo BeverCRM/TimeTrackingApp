@@ -5,14 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Task_Time_Tracker"
         mc:Ignorable="d"
-        Title="TimeTrackerWindow" Height="300" Width="359.575">
+        Title="TimeTrackerWindow" Height="395" Width="360">
     <Grid>
-        <Label Content="Logged as" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="65"/>
-        <TextBox x:Name="CurrentUserBox" HorizontalAlignment="Left" Height="26" Margin="65,4,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150"/>
-        <ComboBox x:Name="TaskComboBox" HorizontalAlignment="Left" Height="29" Margin="70,116,0,0" VerticalAlignment="Top" Width="145"/>
-        <ComboBox x:Name="ProjectComboBox" HorizontalAlignment="Left" Height="29" Margin="70,70,0,0" VerticalAlignment="Top" Width="145" SelectionChanged="ProjectComboBox_SelectionChanged"/>
-        <Label Content="Project" HorizontalAlignment="Left" Height="29" Margin="12,70,0,0" VerticalAlignment="Top" Width="50" RenderTransformOrigin="0.957,0.507"/>
+        <Label Content="Logged as" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="65" Margin="10,0,0,0"/>
+        <TextBox x:Name="CurrentUserBox" HorizontalAlignment="Left" Height="26" Margin="80,4,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150"/>
+        <ComboBox x:Name="TaskComboBox" HorizontalAlignment="Left" Height="29" Margin="76,116,0,0" VerticalAlignment="Top" Width="200" SelectionChanged="TaskComboBox_SelectionChanged"/>
+        <ComboBox x:Name="ProjectComboBox" HorizontalAlignment="Left" Height="29" Margin="76,70,0,0" VerticalAlignment="Top" Width="200" SelectionChanged="ProjectComboBox_SelectionChanged"/>
+        <Label Content="Project" HorizontalAlignment="Left" Height="29" Margin="10,70,0,0" VerticalAlignment="Top" Width="52" RenderTransformOrigin="0.957,0.507"/>
         <Label Content="Task" HorizontalAlignment="Left" Height="29" Margin="12,116,0,0" VerticalAlignment="Top" Width="50"/>
+        <Label x:Name="Time" Content="00:00" HorizontalContentAlignment="Center" FontSize="35" Height="58" Margin="122,150,122,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5"/>
+        <Button x:Name="StartButton" Content="Start" Margin="102,213,188,0" Click="StartButton_Click" Height="24" VerticalAlignment="Top"/>
+        <Button x:Name="StopButton" Content="Stop" Height="24" Margin="188,213,102,0" VerticalAlignment="Top" Click="StopButton_Click"/>
+        <TextBox x:Name="DescriptionBox" AcceptsReturn="True" Height="54" Margin="76,261,76,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>

@@ -62,6 +62,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Model\Project.cs" />
     <Compile Include="Model\ProjectTask.cs" />
     <Compile Include="TimeTrackerWindow.xaml.cs">
       <DependentUpon>TimeTrackerWindow.xaml</DependentUpon>

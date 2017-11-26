@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using Task_Time_Tracker.Model;
 using Task_Time_Tracker.Utility_Functions;
 
@@ -25,16 +26,24 @@ namespace Task_Time_Tracker
     /// </summary>
     public partial class TimeTrackerWindow : Window
     {
-        ProjectTask ProjectTask = new ProjectTask();
+       // ProjectTask ProjectTask = new ProjectTask();
         CRM_Connector crmConnector;
-        List<Tuple<string,Guid>> projects;
-        List<Tuple<string, Guid>> tasks;
+        List<Project> projects;
+        List<ProjectTask> tasks;
+
+        DispatcherTimer timer;
+
+        int minutes = 0;
+        int hours = 0;
 
         public TimeTrackerWindow(CRM_Connector Connector)
         {
             InitializeComponent();
 
+            timer = new DispatcherTimer();
+
             crmConnector = Connector;
+
             string loginUserName = crmConnector.username;
             string userName = "";
             for (int i = 6; i < loginUserName.Length; i++)
@@ -44,26 +53,29 @@ namespace Task_Time_Tracker
             CurrentUserBox.Text = userName;
             CurrentUserBox.IsEnabled = false;
 
-            projects = ProjectTask.retrieveProjects(crmConnector);
+            projects = crmConnector.retrieveProjects();
             ProjectComboBox.DisplayMemberPath = "Text";
             ProjectComboBox.SelectedValuePath = "Value";
             List<ComboBoxPairs> projectCBP = new List<ComboBoxPairs>();
-            foreach (Tuple<string,Guid> project in projects)
+            foreach (Project project in projects)
             {
-                projectCBP.Add(new ComboBoxPairs(project.Item1, project.Item2));
+                projectCBP.Add(new ComboBoxPairs(project.projectName, project.projectId));
             }
             ProjectComboBox.ItemsSource = projectCBP;
+
+            StartButton.IsEnabled = false;
+            StopButton.IsEnabled = false;
         }
 
         private void ProjectComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            tasks = ProjectTask.retrieveTasks(crmConnector, ((ComboBoxPairs)ProjectComboBox.SelectedItem).Value);
+            tasks = crmConnector.retrieveTasks(((ComboBoxPairs)ProjectComboBox.SelectedItem).Value);
             TaskComboBox.DisplayMemberPath = "Text";
             TaskComboBox.SelectedValuePath = "Value";
             List<ComboBoxPairs> taskCBP = new List<ComboBoxPairs>();
-            foreach (Tuple<string, Guid> task in tasks)
+            foreach (ProjectTask task in tasks)
             {
-                taskCBP.Add(new ComboBoxPairs(task.Item1, task.Item2));
+                taskCBP.Add(new ComboBoxPairs(task.taskName, task.taskId));
             }
             TaskComboBox.ItemsSource = taskCBP;
         }
@@ -77,6 +89,54 @@ namespace Task_Time_Tracker
                 Text = key;
                 Value = value;
             }
+        }
+
+        private void TaskComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            StartButton.IsEnabled = true;
+        }
+
+        private void StartButton_Click(object sender, RoutedEventArgs e)
+        {
+            StartButton.IsEnabled = false;
+            StopButton.IsEnabled = true;
+
+            TaskComboBox.IsEnabled = false;
+            ProjectComboBox.IsEnabled = false;
+
+            timer.Interval = TimeSpan.FromMinutes(1);
+            timer.Tick += timerTick;
+            timer.Start();
+        }
+
+        void timerTick(object sender, EventArgs e)
+        {
+            minutes++;
+            if (minutes == 60)
+            {
+                minutes = 0;
+                hours++;
+            }
+            if (hours < 10)
+                Time.Content = "0" + hours.ToString() + ":";
+            else
+                Time.Content = hours.ToString() + ":";
+            if (minutes < 10)
+                Time.Content += "0" + minutes.ToString();
+            else
+                Time.Content += minutes.ToString();
+        }
+
+        private void StopButton_Click(object sender, RoutedEventArgs e)
+        {
+            StartButton.IsEnabled = true;
+            StopButton.IsEnabled = false;
+
+            TaskComboBox.IsEnabled = true;
+            ProjectComboBox.IsEnabled = true;
+
+            timer.Stop();
+            crmConnector.addMinutes(minutes + 60 * hours, ((ComboBoxPairs)ProjectComboBox.SelectedItem).Value, ((ComboBoxPairs)TaskComboBox.SelectedItem).Value, DescriptionBox.Text);
         }
     }
 }
