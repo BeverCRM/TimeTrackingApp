@@ -6,15 +6,16 @@ using System.Linq;
 using System.ServiceModel.Description;
 using System.Text;
 using System.Threading.Tasks;
+using Task_Time_Tracker.Model;
 
 namespace Task_Time_Tracker.Utility_Functions
 {
-    class CRM_Connector
+    public class CRM_Connector
     {
-        private string username;
+        public string username;
         private string password;
         private string soap_uri;
-
+        
         public IOrganizationService service;
 
         public CRM_Connector(string Username, string Password, string Soap_Service_URI)
@@ -29,7 +30,6 @@ namespace Task_Time_Tracker.Utility_Functions
 
             string connection_code = "0";
             string error_message = "";
-
 
             try
             {

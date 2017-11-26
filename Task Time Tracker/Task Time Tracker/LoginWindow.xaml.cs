@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Task_Time_Tracker.Model;
 using Task_Time_Tracker.Utility_Functions;
 
 namespace Task_Time_Tracker
@@ -21,7 +22,8 @@ namespace Task_Time_Tracker
     /// </summary>
     public partial class MainWindow : Window
     {
-        CRM_Connector crmConnector;
+        public CRM_Connector crmConnector;
+        
         public MainWindow()
         {
             InitializeComponent();
@@ -37,15 +39,17 @@ namespace Task_Time_Tracker
             else
             {
                 crmConnector = new CRM_Connector(userName, password, "https://bever.bever.am/XRMServices/2011/Organization.svc");
-
+                
                 Tuple<string, string> connectionStatus = crmConnector.Connect_To_MSCRM();
 
                 if (connectionStatus.Item1 != "0")
                     MessageBox.Show(connectionStatus.Item2);
                 else
-                    MessageBox.Show("Successfully Connected!!");
-
-
+                {
+                    TimeTrackerWindow timeTrackerWindow = new TimeTrackerWindow(crmConnector);
+                    timeTrackerWindow.Show();
+                    Close();
+                }
             }
         }
     }
