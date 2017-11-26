@@ -43,7 +43,7 @@ namespace Task_Time_Tracker
                 if (connectionStatus.Item1 != "0")
                     MessageBox.Show(connectionStatus.Item2);
                 else
-                    MessageBox.Show("Successfully Connected!");
+                    MessageBox.Show("Successfully Connected!!");
 
 
             }
