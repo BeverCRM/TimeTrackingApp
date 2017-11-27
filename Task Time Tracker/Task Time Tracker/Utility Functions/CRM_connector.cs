@@ -1,6 +1,7 @@
 ﻿using Microsoft.Crm.Sdk.Messages;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Client;
+using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Query;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Linq;
 using System.ServiceModel.Description;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using Task_Time_Tracker.Model;
 
 namespace Task_Time_Tracker.Utility_Functions
@@ -97,6 +99,7 @@ namespace Task_Time_Tracker.Utility_Functions
             fetch += "<entity name='bvrcrm_projecttask'>";
             fetch += "<attribute name='bvrcrm_projecttaskid'/>";
             fetch += "<attribute name='bvrcrm_name'/>";
+            fetch += "<attribute name='statuscode'/>";
             fetch += "<filter type='and'>";
             fetch += "<condition attribute='ownerid' operator='eq' value='" + gUserId + "'/>";
             fetch += "<condition attribute='statuscode' operator='ne' value='2' />";
@@ -110,6 +113,7 @@ namespace Task_Time_Tracker.Utility_Functions
                 ProjectTask projectTask = new ProjectTask();
                 projectTask.taskName = task["bvrcrm_name"].ToString();
                 projectTask.taskId = (Guid)task["bvrcrm_projecttaskid"];
+                projectTask.status = ((OptionSetValue)task["statuscode"]).Value;
                 Tasks.Add(projectTask);
             }
 
@@ -156,6 +160,28 @@ namespace Task_Time_Tracker.Utility_Functions
 
                 service.Create(timeTracking);
             }
+        }
+
+        public void completeTaskStatus(Guid taskId)
+        {
+            SetStateRequest setStateRequest = new SetStateRequest()
+            {
+                EntityMoniker = new EntityReference
+                {
+                    Id = taskId,
+                    LogicalName = "bvrcrm_projecttask",
+                },
+                State = new OptionSetValue(1),
+                Status = new OptionSetValue(2)
+            };
+            service.Execute(setStateRequest);
+        }
+
+        public void updateTaskStatus(Guid taskId)
+        {
+            Entity task = service.Retrieve("bvrcrm_projecttask", taskId, new ColumnSet(null));
+            task["statuscode"] = new OptionSetValue(744240000);
+            service.Update(task);
         }
     }
 }

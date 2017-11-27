@@ -31,6 +31,17 @@ namespace Task_Time_Tracker
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            Login();
+        }
+
+        private void onPasswordBoxKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+                Login();
+        }
+
+        private void Login()
+        {
             string userName = LoginBox.Text;
             string password = PasswordBox.Password;
 
@@ -39,7 +50,7 @@ namespace Task_Time_Tracker
             else
             {
                 crmConnector = new CRM_Connector(userName, password, "https://bever.bever.am/XRMServices/2011/Organization.svc");
-                
+
                 Tuple<string, string> connectionStatus = crmConnector.Connect_To_MSCRM();
 
                 if (connectionStatus.Item1 != "0")
