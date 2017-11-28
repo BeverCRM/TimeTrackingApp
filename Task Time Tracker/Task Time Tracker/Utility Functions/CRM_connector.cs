@@ -90,6 +90,14 @@ namespace Task_Time_Tracker.Utility_Functions
             return Projects;
         }
 
+
+        public string getCurrentUserName()
+        {
+            Guid UserId = ((WhoAmIResponse)service.Execute(new WhoAmIRequest())).UserId;
+            string username = service.Retrieve("systemuser", UserId, new ColumnSet("firstname")).GetAttributeValue<string>("firstname");
+            return username;
+        }
+
         public List<ProjectTask> retrieveTasks(Guid projectId)
         {
             List<ProjectTask> Tasks = new List<ProjectTask>();
@@ -182,6 +190,12 @@ namespace Task_Time_Tracker.Utility_Functions
 
         public void completeTaskStatus(Guid taskId)
         {
+            Entity Task = service.Retrieve("bvrcrm_projecttask", taskId, new ColumnSet(null));
+
+            Task["bvrcrm_completed_date"] = DateTime.Now;
+
+            service.Update(Task);
+
             SetStateRequest setStateRequest = new SetStateRequest()
             {
                 EntityMoniker = new EntityReference
@@ -192,7 +206,7 @@ namespace Task_Time_Tracker.Utility_Functions
                 State = new OptionSetValue(1),
                 Status = new OptionSetValue(2)
             };
-            service.Execute(setStateRequest);
+            service.Execute(setStateRequest);         
         }
 
         public void updateTaskStatus(Guid taskId)

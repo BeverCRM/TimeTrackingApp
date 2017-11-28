@@ -4,6 +4,35 @@
              xmlns:local="clr-namespace:Task_Time_Tracker"
              StartupUri="LoginWindow.xaml">
     <Application.Resources>
-         
+
+        <local:BoolToVisibilityConverter x:Key="InputToVisibility"></local:BoolToVisibilityConverter>
+        
+        <Style x:Key="WatermarkTextbox" TargetType="{x:Type TextBox}">
+            <Setter Property="BorderBrush" Value="Black"></Setter>
+            <Setter Property="BorderThickness" Value="1"></Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TextBox}">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <Grid>
+                                <TextBlock Text="Description...">
+                                    <TextBlock.Visibility>
+                                        <MultiBinding Converter="{StaticResource InputToVisibility}">
+                                            <Binding ElementName="inputText" Path="Text.IsEmpty"></Binding>
+                                            <Binding ElementName="inputText" Path="IsFocused"></Binding>
+                                        </MultiBinding>
+                                    </TextBlock.Visibility>
+                                    
+                                </TextBlock>
+                                <TextBox x:Name="inputText" Background="Transparent"></TextBox>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            
+        </Style>
     </Application.Resources>
 </Application>
