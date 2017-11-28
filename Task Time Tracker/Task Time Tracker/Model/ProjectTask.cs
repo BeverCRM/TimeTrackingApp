@@ -15,5 +15,7 @@ namespace Task_Time_Tracker.Model
         public string taskName { get; set; }
         public Guid taskId { get; set; }
         public int status { get; set; }
+        public string priority { get; set; }
+        public DateTime dueDate { get; set; }
     }
 }

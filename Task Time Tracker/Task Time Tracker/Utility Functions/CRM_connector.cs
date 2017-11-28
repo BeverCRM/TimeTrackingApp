@@ -100,6 +100,8 @@ namespace Task_Time_Tracker.Utility_Functions
             fetch += "<attribute name='bvrcrm_projecttaskid'/>";
             fetch += "<attribute name='bvrcrm_name'/>";
             fetch += "<attribute name='statuscode'/>";
+            fetch += "<attribute name='bvrcrm_priority'/>";
+            fetch += "<attribute name='bvrcrm_due_date'/>";
             fetch += "<filter type='and'>";
             fetch += "<condition attribute='ownerid' operator='eq' value='" + gUserId + "'/>";
             fetch += "<condition attribute='statuscode' operator='ne' value='2' />";
@@ -114,6 +116,22 @@ namespace Task_Time_Tracker.Utility_Functions
                 projectTask.taskName = task["bvrcrm_name"].ToString();
                 projectTask.taskId = (Guid)task["bvrcrm_projecttaskid"];
                 projectTask.status = ((OptionSetValue)task["statuscode"]).Value;
+                projectTask.dueDate = (DateTime)task["bvrcrm_due_date"];
+
+                int priorityValue = ((OptionSetValue)task["bvrcrm_priority"]).Value;
+                switch(priorityValue)
+                {
+                    case 744240000:
+                        projectTask.priority = "High";
+                        break;
+                    case 744240001:
+                        projectTask.priority = "Medium";
+                        break;
+                    case 744240002:
+                        projectTask.priority = "Low";
+                        break;
+                }
+
                 Tasks.Add(projectTask);
             }
 
@@ -182,6 +200,30 @@ namespace Task_Time_Tracker.Utility_Functions
             Entity task = service.Retrieve("bvrcrm_projecttask", taskId, new ColumnSet(null));
             task["statuscode"] = new OptionSetValue(744240000);
             service.Update(task);
+        }
+
+        public int retrieveTaskMinutes(Guid projectId,Guid taskId)
+        {
+            int minutes = 0;
+            Guid gUserId = ((WhoAmIResponse)service.Execute(new WhoAmIRequest())).UserId;
+
+            string fetch = "<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='true' >";
+            fetch += "<entity name='bvrcrm_timetracking'>";
+            fetch += "<attribute name='bvrcrm_minutes'/>";
+            fetch += "<filter type='and'>";
+            fetch += "<condition attribute='ownerid' operator='eq' value='" + gUserId + "'/>";
+            fetch += "<condition attribute='bvrcrm_project' operator='eq' value='" + projectId + "' />";
+            fetch += "<condition attribute='bvrcrm_task' operator='eq' value='" + taskId + "'/>";
+            fetch += "</filter>";
+            fetch += "</entity>";
+            fetch += "</fetch>";
+            EntityCollection timeTrackings = service.RetrieveMultiple(new FetchExpression(fetch));
+            foreach (Entity timeTracking in timeTrackings.Entities)
+            {
+                minutes += Convert.ToInt32((Decimal)timeTracking["bvrcrm_minutes"]);
+            }
+
+            return minutes;
         }
     }
 }

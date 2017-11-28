@@ -27,6 +27,7 @@ namespace Task_Time_Tracker
         public MainWindow()
         {
             InitializeComponent();
+            LoginBox.Focus();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

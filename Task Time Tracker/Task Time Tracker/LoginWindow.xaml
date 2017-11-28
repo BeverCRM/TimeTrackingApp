@@ -3,8 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Task_Time_Tracker"
+        ResizeMode="CanMinimize"
         mc:Ignorable="d"
+        Icon="Resources\Main.ico"
         Title="Time Tracking App" Height="350" Width="430">
     <Grid Margin="0,0,2,0">
         <TextBox x:Name="LoginBox" HorizontalAlignment="Left" Height="23" Margin="155,114,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="147" TabIndex="0"/>
