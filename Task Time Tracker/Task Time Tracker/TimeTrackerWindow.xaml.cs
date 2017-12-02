@@ -33,8 +33,8 @@ namespace Task_Time_Tracker
     {
         CRM_Connector crmConnector;
 
-        List<Project> projects;
-        List<ProjectTask> tasks;
+       // List<Project> projects;
+      //  List<ProjectTask> tasks;
 
         ObservableCollection<ComboBoxPairs1> taskCBP;
         ObservableCollection<ComboBoxPairs> projectCBP;
@@ -82,8 +82,8 @@ namespace Task_Time_Tracker
             
             ProjectComboBox.DisplayMemberPath = "Text";
             ProjectComboBox.SelectedValuePath = "Value";
-            
-            projects = crmConnector.retrieveProjects();
+
+            List<Project> projects = crmConnector.retrieveProjects();
             projectCBP = new ObservableCollection<ComboBoxPairs>();
             foreach (Project project in projects)
             {
@@ -126,7 +126,7 @@ namespace Task_Time_Tracker
         {
             if (ProjectComboBox.SelectedItem != null)
             {
-                tasks = crmConnector.retrieveTasks(((ComboBoxPairs)ProjectComboBox.SelectedItem).Value);
+                List<ProjectTask> tasks = crmConnector.retrieveTasks(((ComboBoxPairs)ProjectComboBox.SelectedItem).Value);
                 taskCBP = new ObservableCollection<ComboBoxPairs1>();
                 foreach (ProjectTask task in tasks)
                 {
@@ -172,6 +172,8 @@ namespace Task_Time_Tracker
 
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
+
+
           
             if (DescriptionBox.Text != "")
             {
@@ -179,6 +181,8 @@ namespace Task_Time_Tracker
                 StartButton.IsEnabled = false;
                 StopButton.IsEnabled = true;
                 CompleteButton.IsEnabled = false;
+
+                RefreshButton.Visibility = Visibility.Hidden;
 
                 TaskComboBox.IsEnabled = false;
                 ProjectComboBox.IsEnabled = false;
@@ -225,6 +229,9 @@ namespace Task_Time_Tracker
                 Time.Content += "0" + minutes.ToString();
             else
                 Time.Content += minutes.ToString();
+
+            if (currentMinutes != 0 && currentMinutes % 20==0)
+                SendCollectedTime();
         }
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
@@ -233,6 +240,8 @@ namespace Task_Time_Tracker
             StopButton.IsEnabled = false;
             CompleteButton.IsEnabled = true;
 
+            RefreshButton.Visibility = Visibility.Visible;
+
             TaskComboBox.IsEnabled = true;
             ProjectComboBox.IsEnabled = true;
 
@@ -240,7 +249,9 @@ namespace Task_Time_Tracker
 
             timer.Tick -= timerTick;
             timer.Stop();
-            crmConnector.addMinutes(currentMinutes, ((ComboBoxPairs)ProjectComboBox.SelectedItem).Value, ((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.taskId, DescriptionBox.Text);
+
+            if(currentMinutes>0)
+                crmConnector.addMinutes(currentMinutes, ((ComboBoxPairs)ProjectComboBox.SelectedItem).Value, ((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.taskId, DescriptionBox.Text);
 
             currentMinutes = 0;
             minutes = 0;
@@ -250,21 +261,58 @@ namespace Task_Time_Tracker
 
         private void onCompletebuttonclick(object sender, RoutedEventArgs e)
         {
-            crmConnector.completeTaskStatus(((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.taskId);
+            MessageBoxResult result = System.Windows.MessageBox.Show("Are you sure you want to complete the task?", "Complete Task", MessageBoxButton.YesNo);
 
+            if (result == MessageBoxResult.Yes)
+            {
+                crmConnector.completeTaskStatus(((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.taskId);
+                refreshTasks();
+            }
+        }
+
+
+        public void SendCollectedTime()
+        {
+            try
+            {
+                crmConnector.addMinutes(currentMinutes, ((ComboBoxPairs)ProjectComboBox.SelectedItem).Value, ((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.taskId, DescriptionBox.Text);
+                currentMinutes = 0;
+            }
+            catch(Exception ex)
+            {
+
+            }
+        }
+
+        public void refreshTasks()
+        {
             PriorityLabel.Content = "";
             DueDateLabel.Content = "";
-            
+
             StartButton.IsEnabled = false;
+            StopButton.IsEnabled = false;
             CompleteButton.IsEnabled = false;
 
             DescriptionBox.Text = "";
 
-            taskCBP.Remove((ComboBoxPairs1)TaskComboBox.SelectedItem);
+            if(taskCBP!=null)
+            taskCBP.Clear();
 
-            if (taskCBP.Count == 0)
-                projectCBP.Remove((ComboBoxPairs)ProjectComboBox.SelectedItem);
+            if(projectCBP!=null)
+            projectCBP.Clear();
 
+            List<Project> projects = crmConnector.retrieveProjects();
+         
+            foreach (Project project in projects)
+            {
+                projectCBP.Add(new ComboBoxPairs(project.projectName, project.projectId));
+            }
+            ProjectComboBox.ItemsSource = projectCBP;
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            refreshTasks();
         }
     }
 }

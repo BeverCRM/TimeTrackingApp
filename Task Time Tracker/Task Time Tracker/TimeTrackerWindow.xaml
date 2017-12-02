@@ -6,7 +6,7 @@
         ResizeMode="CanMinimize"
         mc:Ignorable="d"
         Icon="Resources\Main.ico"
-        Title="TimeTrackerWindow" Height="471.5" Width="356">
+        Title="Time Tracking App" Height="471.5" Width="356">
     <Grid Margin="0,0,-6,0" Height="443" VerticalAlignment="Bottom">
         <Grid.RowDefinitions>
             <RowDefinition Height="380*"/>
@@ -26,7 +26,10 @@
         <Label Content="Due Date:" HorizontalAlignment="Left" Height="29" Margin="178,157,0,0" VerticalAlignment="Top" Width="62"/>
         <Label x:Name="PriorityLabel" Content="" HorizontalAlignment="Left" Height="29" Margin="76,157,0,0" VerticalAlignment="Top" Width="86"/>
         <Label x:Name="DueDateLabel" Content="" HorizontalAlignment="Left" Height="29" Margin="245,157,0,0" VerticalAlignment="Top" Width="86"/>
-        <Label x:Name="currentUserLabel" Content="Welcome, Ruben" HorizontalAlignment="Left" Margin="9,14,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.583,0.416"/>
+        <Label x:Name="currentUserLabel" Content="Welcome, Rub0" HorizontalAlignment="Left" Margin="9,14,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.583,0.416"/>
+        <Button x:Name="RefreshButton"  HorizontalAlignment="Left" Margin="269,65,0,0" VerticalAlignment="Top" Width="25" Height="20" Background="Transparent" BorderBrush="Transparent" Click="Button_Click">
+            <Image Source="Images/refresh.png"></Image>
+        </Button>
 
     </Grid>
 </Window>
