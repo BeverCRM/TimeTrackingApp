@@ -105,6 +105,7 @@ namespace Task_Time_Tracker.Utility_Functions
 
             string fetch = "<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='true' >";
             fetch += "<entity name='bvrcrm_projecttask'>";
+            fetch += "<order attribute='bvrcrm_due_date' descending='false' />";
             fetch += "<attribute name='bvrcrm_projecttaskid'/>";
             fetch += "<attribute name='bvrcrm_name'/>";
             fetch += "<attribute name='statuscode'/>";
@@ -124,20 +125,24 @@ namespace Task_Time_Tracker.Utility_Functions
                 projectTask.taskName = task["bvrcrm_name"].ToString();
                 projectTask.taskId = (Guid)task["bvrcrm_projecttaskid"];
                 projectTask.status = ((OptionSetValue)task["statuscode"]).Value;
-                projectTask.dueDate = (DateTime)task["bvrcrm_due_date"];
+                if (task.Contains("bvrcrm_due_date") && task["bvrcrm_due_date"] != null)
+                    projectTask.dueDate = (DateTime)task["bvrcrm_due_date"];
 
-                int priorityValue = ((OptionSetValue)task["bvrcrm_priority"]).Value;
-                switch(priorityValue)
+                if (task.Contains("bvrcrm_priority") && task["bvrcrm_priority"] != null)
                 {
-                    case 744240000:
-                        projectTask.priority = "High";
-                        break;
-                    case 744240001:
-                        projectTask.priority = "Medium";
-                        break;
-                    case 744240002:
-                        projectTask.priority = "Low";
-                        break;
+                    int priorityValue = ((OptionSetValue)task["bvrcrm_priority"]).Value;
+                    switch (priorityValue)
+                    {
+                        case 744240000:
+                            projectTask.priority = "High";
+                            break;
+                        case 744240001:
+                            projectTask.priority = "Medium";
+                            break;
+                        case 744240002:
+                            projectTask.priority = "Low";
+                            break;
+                    }
                 }
 
                 Tasks.Add(projectTask);

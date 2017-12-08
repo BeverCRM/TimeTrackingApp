@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,8 +27,18 @@ namespace Task_Time_Tracker
         
         public MainWindow()
         {
-            InitializeComponent();
-            LoginBox.Focus();
+            String thisprocessname = Process.GetCurrentProcess().ProcessName;
+
+            if (Process.GetProcesses().Count(p => p.ProcessName == thisprocessname) > 1)
+            {
+                MessageBox.Show("Instance already running");
+                Close();
+            }
+            else
+            {
+                InitializeComponent();
+                LoginBox.Focus();
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

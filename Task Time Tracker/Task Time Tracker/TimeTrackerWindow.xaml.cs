@@ -66,15 +66,6 @@ namespace Task_Time_Tracker
 
             crmConnector = Connector;
 
-            /*  string loginUserName = crmConnector.username;
-              string userName = "";
-              for (int i = 6; i < loginUserName.Length; i++)
-              {
-                  userName += loginUserName[i];
-              }
-              CurrentUserBox.Text = userName;
-              CurrentUserBox.IsEnabled = false;*/
-
             currentUserLabel.Content = "Welcome, " + crmConnector.getCurrentUserName();
 
             TaskComboBox.DisplayMemberPath = "Text";
@@ -113,6 +104,8 @@ namespace Task_Time_Tracker
             {
                 case MessageBoxResult.Yes:
                     timer.Stop();
+                    if (currentMinutes != 0 && currentMinutes % 20 == 0)
+                        SendCollectedTime();
                     break;
                 case MessageBoxResult.No:
                     e.Cancel = true;
@@ -172,9 +165,6 @@ namespace Task_Time_Tracker
 
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
-
-
-          
             if (DescriptionBox.Text != "")
             {
                 DescriptionBox.IsEnabled = false;
@@ -265,6 +255,7 @@ namespace Task_Time_Tracker
 
             if (result == MessageBoxResult.Yes)
             {
+                DescriptionBox.Text = "";
                 crmConnector.completeTaskStatus(((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.taskId);
                 refreshTasks();
             }
