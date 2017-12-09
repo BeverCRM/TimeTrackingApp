@@ -104,7 +104,7 @@ namespace Task_Time_Tracker
             {
                 case MessageBoxResult.Yes:
                     timer.Stop();
-                    if (currentMinutes != 0 && currentMinutes % 20 == 0)
+                    if (currentMinutes != 0)
                         SendCollectedTime();
                     break;
                 case MessageBoxResult.No:
@@ -158,7 +158,10 @@ namespace Task_Time_Tracker
             if (TaskComboBox.SelectedItem != null)
             {
                 PriorityLabel.Content = ((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.priority;
-                DueDateLabel.Content = ((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.dueDate.ToString("d");
+                if (((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.dueDate != DateTime.MinValue)
+                    DueDateLabel.Content = ((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.dueDate.AddDays(1).ToString("d");
+                else
+                    DueDateLabel.Content = "";
                 StartButton.IsEnabled = true;
             }
         }
