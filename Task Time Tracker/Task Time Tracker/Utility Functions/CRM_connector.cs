@@ -226,7 +226,7 @@ namespace Task_Time_Tracker.Utility_Functions
             int minutes = 0;
             Guid gUserId = ((WhoAmIResponse)service.Execute(new WhoAmIRequest())).UserId;
 
-            string fetch = "<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='true' >";
+            string fetch = "<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='false' >";
             fetch += "<entity name='bvrcrm_timetracking'>";
             fetch += "<attribute name='bvrcrm_minutes'/>";
             fetch += "<filter type='and'>";
@@ -237,6 +237,7 @@ namespace Task_Time_Tracker.Utility_Functions
             fetch += "</entity>";
             fetch += "</fetch>";
             EntityCollection timeTrackings = service.RetrieveMultiple(new FetchExpression(fetch));
+
             foreach (Entity timeTracking in timeTrackings.Entities)
             {
                 minutes += Convert.ToInt32((Decimal)timeTracking["bvrcrm_minutes"]);
