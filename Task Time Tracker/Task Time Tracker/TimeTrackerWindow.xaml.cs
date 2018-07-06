@@ -168,40 +168,36 @@ namespace Task_Time_Tracker
 
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
-            if (DescriptionBox.Text != "")
-            {
-                DescriptionBox.IsEnabled = false;
-                StartButton.IsEnabled = false;
-                StopButton.IsEnabled = true;
-                CompleteButton.IsEnabled = false;
+            if (DescriptionBox.Text == "")
+                System.Windows.MessageBox.Show("No description provided. It is recommended to provide description");
 
-                RefreshButton.Visibility = Visibility.Hidden;
+            DescriptionBox.IsEnabled = false;
+            StartButton.IsEnabled = false;
+            StopButton.IsEnabled = true;
+            CompleteButton.IsEnabled = false;
 
-                TaskComboBox.IsEnabled = false;
-                ProjectComboBox.IsEnabled = false;
+            RefreshButton.Visibility = Visibility.Hidden;
 
-                minutes = crmConnector.retrieveTaskMinutes(((ComboBoxPairs)ProjectComboBox.SelectedItem).Value, ((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.taskId);
-                hours = minutes / 60;
-                minutes = minutes % 60;
-                if (hours < 10)
-                    Time.Content = "0" + hours.ToString() + ":";
-                else
-                    Time.Content = hours.ToString() + ":";
-                if (minutes < 10)
-                    Time.Content += "0" + minutes.ToString();
-                else
-                    Time.Content += minutes.ToString();
+            TaskComboBox.IsEnabled = false;
+            ProjectComboBox.IsEnabled = false;
 
-                timer.Interval = new TimeSpan(0, 1, 0);
-                timer.Tick += timerTick;
-                timer.Start();
-
-                crmConnector.updateTaskStatus(((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.taskId);
-            }
+            minutes = crmConnector.retrieveTaskMinutes(((ComboBoxPairs)ProjectComboBox.SelectedItem).Value, ((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.taskId);
+            hours = minutes / 60;
+            minutes = minutes % 60;
+            if (hours < 10)
+                Time.Content = "0" + hours.ToString() + ":";
             else
-            {
-                System.Windows.MessageBox.Show("Please provide description.");
-            }
+                Time.Content = hours.ToString() + ":";
+            if (minutes < 10)
+                Time.Content += "0" + minutes.ToString();
+            else
+                Time.Content += minutes.ToString();
+
+            timer.Interval = new TimeSpan(0, 1, 0);
+            timer.Tick += timerTick;
+            timer.Start();
+
+            crmConnector.updateTaskStatus(((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.taskId);
         }
 
         void timerTick(object sender, EventArgs e)
