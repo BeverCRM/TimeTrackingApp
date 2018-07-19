@@ -154,14 +154,14 @@ namespace Task_Time_Tracker.Utility_Functions
         public void addMinutes(int minutes, Guid projectId, Guid taskId, string description)
         {
             Guid gUserId = ((WhoAmIResponse)service.Execute(new WhoAmIRequest())).UserId;
-            DateTime thisDay = DateTime.Today;
+            DateTime thisDay = DateTime.Now;
 
             string fetch = "<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='true' >";
             fetch += "<entity name='bvrcrm_timetracking'>";
             fetch += "<attribute name='bvrcrm_minutes'/>";
             fetch += "<attribute name='bvrcrm_timetrackingid'/>";
             fetch += "<filter type='and'>";
-            fetch += "<condition attribute='bvrcrm_tracking_date' operator='eq' value='" + thisDay + "'/>";
+            fetch += "<condition attribute='bvrcrm_tracking_date' operator='eq' value='" + thisDay.ToString("MM/dd/yyyy hh:mm:ss") + "'/>";
             fetch += "<condition attribute='ownerid' operator='eq' value='" + gUserId +"'/>";
             fetch += "<condition attribute='bvrcrm_project' operator='eq' value='" + projectId + "'/>";
             fetch += "<condition attribute='bvrcrm_task' operator='eq' value='" + taskId + "'/>";
