@@ -12,10 +12,10 @@ namespace Task_Time_Tracker.Model
 {
     public class ProjectTask
     {
-        public string taskName { get; set; }
-        public Guid taskId { get; set; }
-        public int status { get; set; }
-        public string priority { get; set; }
-        public DateTime dueDate { get; set; }
+        public string TaskName { get; set; }
+        public Guid TaskId { get; set; }
+        public int Status { get; set; }
+        public string Priority { get; set; }
+        public DateTime DueDate { get; set; }
     }
 }

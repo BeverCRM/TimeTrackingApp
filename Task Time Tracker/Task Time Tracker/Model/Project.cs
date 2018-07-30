@@ -8,7 +8,7 @@ namespace Task_Time_Tracker.Model
 {
     public class Project
     {
-        public string projectName { get; set; }
-        public Guid projectId { get; set; }
+        public string ProjectName { get; set; }
+        public Guid ProjectId { get; set; }
     }
 }

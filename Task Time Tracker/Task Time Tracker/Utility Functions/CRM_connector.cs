@@ -1,7 +1,6 @@
 ﻿using Microsoft.Crm.Sdk.Messages;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Client;
-using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Query;
 using System;
 using System.Collections.Generic;
@@ -61,7 +60,38 @@ namespace Task_Time_Tracker.Utility_Functions
             return new Tuple<string, string>(connection_code, error_message);
         }
 
-        public List<Project> retrieveProjects()
+        public string GetCurrentUserName()
+        {
+            Guid UserId = ((WhoAmIResponse)service.Execute(new WhoAmIRequest())).UserId;
+            string username = service.Retrieve("systemuser", UserId, new ColumnSet("firstname")).GetAttributeValue<string>("firstname");
+            return username;
+        }
+
+        public List<Project> RetrieveAllProjects()
+        {
+            List<Project> Projects = new List<Project>();
+            
+            string fetch = "<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='true' >" +
+                           "<entity name='bvrcrm_project'>" +
+                           "<attribute name='bvrcrm_name'/>" +
+                           "<attribute name='bvrcrm_projectid'/>" +
+                           "</entity>" +
+                           "</fetch>";
+
+            EntityCollection projects = service.RetrieveMultiple(new FetchExpression(fetch));
+
+            foreach (Entity project in projects.Entities)
+            {
+                Project projectElement = new Project();
+                projectElement.ProjectName = project["bvrcrm_name"].ToString();
+                projectElement.ProjectId = (Guid)project["bvrcrm_projectid"];
+                Projects.Add(projectElement);
+            }
+
+            return Projects;
+        }
+
+        public List<Project> RetrieveProjects()
         {
             List<Project> Projects = new List<Project>();
             Guid gUserId = ((WhoAmIResponse)service.Execute(new WhoAmIRequest())).UserId;
@@ -82,23 +112,15 @@ namespace Task_Time_Tracker.Utility_Functions
             foreach (Entity project in projects.Entities)
             {
                 Project projectElement = new Project();
-                projectElement.projectName = project["bvrcrm_name"].ToString();
-                projectElement.projectId = (Guid)project["bvrcrm_projectid"];
+                projectElement.ProjectName = project["bvrcrm_name"].ToString();
+                projectElement.ProjectId = (Guid)project["bvrcrm_projectid"];
                 Projects.Add(projectElement);
             }
 
             return Projects;
         }
 
-
-        public string getCurrentUserName()
-        {
-            Guid UserId = ((WhoAmIResponse)service.Execute(new WhoAmIRequest())).UserId;
-            string username = service.Retrieve("systemuser", UserId, new ColumnSet("firstname")).GetAttributeValue<string>("firstname");
-            return username;
-        }
-
-        public List<ProjectTask> retrieveTasks(Guid projectId)
+        public List<ProjectTask> RetrieveTasks(Guid projectId)
         {
             List<ProjectTask> Tasks = new List<ProjectTask>();
             Guid gUserId = ((WhoAmIResponse)service.Execute(new WhoAmIRequest())).UserId;
@@ -118,15 +140,17 @@ namespace Task_Time_Tracker.Utility_Functions
             fetch += "</filter>";
             fetch += "</entity>";
             fetch += "</fetch>";
+
             EntityCollection tasks = service.RetrieveMultiple(new FetchExpression(fetch));
+
             foreach (Entity task in tasks.Entities)
             {
                 ProjectTask projectTask = new ProjectTask();
-                projectTask.taskName = task["bvrcrm_name"].ToString();
-                projectTask.taskId = (Guid)task["bvrcrm_projecttaskid"];
-                projectTask.status = ((OptionSetValue)task["statuscode"]).Value;
+                projectTask.TaskName = task["bvrcrm_name"].ToString();
+                projectTask.TaskId = (Guid)task["bvrcrm_projecttaskid"];
+                projectTask.Status = ((OptionSetValue)task["statuscode"]).Value;
                 if (task.Contains("bvrcrm_due_date") && task["bvrcrm_due_date"] != null)
-                    projectTask.dueDate = (DateTime)task["bvrcrm_due_date"];
+                    projectTask.DueDate = (DateTime)task["bvrcrm_due_date"];
 
                 if (task.Contains("bvrcrm_priority") && task["bvrcrm_priority"] != null)
                 {
@@ -134,13 +158,13 @@ namespace Task_Time_Tracker.Utility_Functions
                     switch (priorityValue)
                     {
                         case 744240000:
-                            projectTask.priority = "High";
+                            projectTask.Priority = "High";
                             break;
                         case 744240001:
-                            projectTask.priority = "Medium";
+                            projectTask.Priority = "Medium";
                             break;
                         case 744240002:
-                            projectTask.priority = "Low";
+                            projectTask.Priority = "Low";
                             break;
                     }
                 }
@@ -151,7 +175,7 @@ namespace Task_Time_Tracker.Utility_Functions
             return Tasks;
         }
 
-        public void addMinutes(int minutes, Guid projectId, Guid taskId, string description)
+        public void AddMinutes(int minutes, Guid projectId, Guid taskId, string description)
         {
             Guid gUserId = ((WhoAmIResponse)service.Execute(new WhoAmIRequest())).UserId;
             DateTime thisDay = DateTime.Now;
@@ -193,35 +217,36 @@ namespace Task_Time_Tracker.Utility_Functions
             }
         }
 
-        public void completeTaskStatus(Guid taskId)
+        public void CompleteTaskStatus(Guid taskId)
         {
-            Entity Task = service.Retrieve("bvrcrm_projecttask", taskId, new ColumnSet(null));
+            Entity Task = service.Retrieve("bvrcrm_projecttask", taskId, new ColumnSet(false));
 
             Task["bvrcrm_completed_date"] = DateTime.Now;
 
             service.Update(Task);
 
-            SetStateRequest setStateRequest = new SetStateRequest()
+            SetStateRequest setTaskCompleted = new SetStateRequest()
             {
                 EntityMoniker = new EntityReference
                 {
                     Id = taskId,
-                    LogicalName = "bvrcrm_projecttask",
+                    LogicalName = "bvrcrm_projecttask"
                 },
                 State = new OptionSetValue(1),
                 Status = new OptionSetValue(2)
             };
-            service.Execute(setStateRequest);         
+
+            service.Execute(setTaskCompleted);         
         }
 
-        public void updateTaskStatus(Guid taskId)
+        public void UpdateTaskStatus(Guid taskId)
         {
-            Entity task = service.Retrieve("bvrcrm_projecttask", taskId, new ColumnSet(null));
+            Entity task = service.Retrieve("bvrcrm_projecttask", taskId, new ColumnSet(false));
             task["statuscode"] = new OptionSetValue(744240000);
             service.Update(task);
         }
 
-        public int retrieveTaskMinutes(Guid projectId,Guid taskId)
+        public int RetrieveTaskMinutes(Guid projectId,Guid taskId)
         {
             int minutes = 0;
             Guid gUserId = ((WhoAmIResponse)service.Execute(new WhoAmIRequest())).UserId;
@@ -244,6 +269,57 @@ namespace Task_Time_Tracker.Utility_Functions
             }
 
             return minutes;
+        }
+
+        public void CreateMeeting(Guid projectId, string description, DateTime? completedDate, Decimal duration)
+        {
+            try
+            {
+                /// Creates a project for the meeting
+                Entity project = service.Retrieve("bvrcrm_project", projectId, new ColumnSet("bvrcrm_customer"));
+                MessageBox.Show(duration.ToString());
+                Entity task = new Entity("bvrcrm_projecttask");
+
+                task["bvrcrm_name"] = description;
+                task["bvrcrm_customer"] = project.GetAttributeValue<EntityReference>("bvrcrm_customer");
+                task["bvrcrm_project"] = project.ToEntityReference();
+
+                if (completedDate != null)
+                    task["bvrcrm_completed_date"] = completedDate;
+
+                Guid taskId = service.Create(task);
+
+                /// Creates a time tracking record for the recently created project
+                Entity timeTracking = new Entity("bvrcrm_timetracking");
+
+                timeTracking["bvrcrm_minutes"] = duration;
+                timeTracking["bvrcrm_name"] = description;
+                timeTracking["bvrcrm_project"] = project.ToEntityReference();
+                timeTracking["bvrcrm_task"] = new EntityReference("bvrcrm_projecttask", taskId);
+
+                if (completedDate != null)
+                    timeTracking["bvrcrm_tracking_date"] = completedDate;
+
+                service.Create(timeTracking);
+
+                /// Sets the status of recently created project to completed
+                SetStateRequest setTaskCompleted = new SetStateRequest()
+                {
+                    EntityMoniker = new EntityReference
+                    {
+                        Id = taskId,
+                        LogicalName = "bvrcrm_projecttask"
+                    },
+                    State = new OptionSetValue(1),
+                    Status = new OptionSetValue(2)
+                };
+
+                service.Execute(setTaskCompleted);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
         }
     }
 }

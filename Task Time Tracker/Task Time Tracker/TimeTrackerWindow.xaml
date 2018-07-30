@@ -6,30 +6,53 @@
         ResizeMode="CanMinimize"
         mc:Ignorable="d"
         Icon="Resources\Main.ico"
-        Title="Time Tracking App" Height="471.5" Width="356">
-    <Grid Margin="0,0,-6,0" Height="443" VerticalAlignment="Bottom">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="380*"/>
-        </Grid.RowDefinitions>
-        <Label Content="Logged as" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="65" Margin="10,0,0,0" Visibility="Hidden"/>
-        <TextBox x:Name="CurrentUserBox" HorizontalAlignment="Left" Height="26" Margin="80,4,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Visibility="Hidden"/>
-        <ComboBox x:Name="TaskComboBox" HorizontalAlignment="Left" Height="20" Margin="76,103,0,0" VerticalAlignment="Top" SelectionChanged="TaskComboBox_SelectionChanged" Width="190"/>
-        <ComboBox x:Name="ProjectComboBox" HorizontalAlignment="Left" Height="20" Margin="76,65,0,0" VerticalAlignment="Top" SelectionChanged="ProjectComboBox_SelectionChanged" Width="190"/>
-        <Label Content="Project" HorizontalAlignment="Left" Height="29" Margin="10,59,0,0" VerticalAlignment="Top" Width="52" RenderTransformOrigin="0.957,0.507"/>
-        <Label Content="Task" HorizontalAlignment="Left" Height="29" Margin="12,99,0,0" VerticalAlignment="Top" Width="52"/>
-        <Label x:Name="Time" Content="00:00" HorizontalContentAlignment="Center" FontSize="35" Height="58" Margin="122,182,122,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5"/>
-        <Button x:Name="StartButton" Content="Start" Margin="110,248,184,0" Click="StartButton_Click" Height="24" VerticalAlignment="Top"/>
-        <Button x:Name="StopButton" Content="Stop" Height="24" Margin="184,248,110,0" VerticalAlignment="Top" Click="StopButton_Click"/>
-        <TextBox x:Name="DescriptionBox" AcceptsReturn="True" Margin="76,297,76,0" TextWrapping="Wrap"  Height="54" VerticalAlignment="Top" />
-        <Button x:Name="CompleteButton" Content="Complete Task" Height ="24" Margin="128,367,128,0" RenderTransformOrigin="0.508,0.034" Click="onCompletebuttonclick" VerticalAlignment="Top"/>
-        <Label Content="Priority:" HorizontalAlignment="Left" Height="29" Margin="13,157,0,0" VerticalAlignment="Top" Width="62"/>
-        <Label Content="Due Date:" HorizontalAlignment="Left" Height="29" Margin="178,157,0,0" VerticalAlignment="Top" Width="62"/>
-        <Label x:Name="PriorityLabel" Content="" HorizontalAlignment="Left" Height="29" Margin="76,157,0,0" VerticalAlignment="Top" Width="86"/>
-        <Label x:Name="DueDateLabel" Content="" HorizontalAlignment="Left" Height="29" Margin="245,157,0,0" VerticalAlignment="Top" Width="86"/>
-        <Label x:Name="currentUserLabel" Content="Welcome, Rub0" HorizontalAlignment="Left" Margin="9,14,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.583,0.416"/>
-        <Button x:Name="RefreshButton"  HorizontalAlignment="Left" Margin="269,65,0,0" VerticalAlignment="Top" Width="25" Height="20" Background="Transparent" BorderBrush="Transparent" Click="Button_Click">
-            <Image Source="Images/refresh.png"></Image>
-        </Button>
+        Title="Time Tracking App" Height="470" Width="355">
+    
+    <Window.Resources>
+        <ItemsPanelTemplate x:Key="MenuItemPanelTemplate">
+            <StackPanel Margin="-20,0,0,0" Background="White"/>
+        </ItemsPanelTemplate>
 
-    </Grid>
+        <Style TargetType="{x:Type MenuItem}">
+            <Setter Property="ItemsPanel" Value="{StaticResource MenuItemPanelTemplate}"/>
+        </Style>
+    </Window.Resources>
+    
+    <DockPanel Background="WhiteSmoke">
+        <Menu BorderThickness="1" DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem Header="New">
+                    <MenuItem Header="Meeting" Click="MenuNewMeeting_Click"/>
+                    <MenuItem Header="Task" />
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="Sign Out" Click="MenuSignOut_Click"/>
+                <MenuItem Header="Close" Click="MenuClose_Click" />
+            </MenuItem>
+        </Menu>
+        <Grid Margin="0,0,-6,0" Height="443" VerticalAlignment="Bottom">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="380*"/>
+            </Grid.RowDefinitions>
+            <Label Content="Logged as" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="65" Margin="10,0,0,0" Visibility="Hidden"/>
+            <TextBox x:Name="CurrentUserBox" HorizontalAlignment="Left" Height="26" Margin="80,4,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="150" Visibility="Hidden"/>
+            <ComboBox x:Name="TaskComboBox" HorizontalAlignment="Left" Height="20" Margin="76,110,0,0" VerticalAlignment="Top" SelectionChanged="TaskComboBox_SelectionChanged" Width="190"/>
+            <ComboBox x:Name="ProjectComboBox" HorizontalAlignment="Left" Height="20" Margin="76,72,0,0" VerticalAlignment="Top" SelectionChanged="ProjectComboBox_SelectionChanged" Width="190"/>
+            <Label Content="Project" HorizontalAlignment="Left" Height="29" Margin="13,72,0,0" VerticalAlignment="Top" Width="52" />
+            <Label Content="Task" HorizontalAlignment="Left" Height="29" Margin="12,106,0,0" VerticalAlignment="Top" Width="52"/>
+            <Label x:Name="Time" Content="00:00" HorizontalContentAlignment="Center" FontSize="35" Height="58" Margin="122,189,122,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5"/>
+            <Button x:Name="StartButton" Content="Start" Margin="110,255,184,0" Click="StartButton_Click" Height="24" VerticalAlignment="Top"/>
+            <Button x:Name="StopButton" Content="Stop" Height="24" Margin="184,255,110,0" VerticalAlignment="Top" Click="StopButton_Click"/>
+            <TextBox x:Name="DescriptionBox" AcceptsReturn="True" Margin="76,304,76,0" TextWrapping="Wrap"  Height="54" VerticalAlignment="Top" />
+            <Button x:Name="CompleteButton" Content="Complete Task" Height ="24" Margin="128,374,128,0" RenderTransformOrigin="0.508,0.034" Click="CompleteButton_Click" VerticalAlignment="Top"/>
+            <Label Content="Priority:" HorizontalAlignment="Left" Height="29" Margin="13,164,0,0" VerticalAlignment="Top" Width="62"/>
+            <Label Content="Due Date:" HorizontalAlignment="Left" Height="29" Margin="178,164,0,0" VerticalAlignment="Top" Width="62"/>
+            <Label x:Name="PriorityLabel" Content="" HorizontalAlignment="Left" Height="29" Margin="76,164,0,0" VerticalAlignment="Top" Width="86"/>
+            <Label x:Name="DueDateLabel" Content="" HorizontalAlignment="Left" Height="29" Margin="245,164,0,0" VerticalAlignment="Top" Width="86"/>
+            <Label x:Name="currentUserLabel" Content="Welcome, Rub0" HorizontalAlignment="Left" Margin="13,39,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.583,0.416"/>
+            <Button x:Name="RefreshButton"  HorizontalAlignment="Left" Margin="269,72,0,0" VerticalAlignment="Top" Width="25" Height="20" Background="Transparent" BorderBrush="Transparent" Click="RefreshButton_Click">
+                <Image Source="Images/refresh.png"></Image>
+            </Button>
+        </Grid>
+    </DockPanel>
 </Window>
