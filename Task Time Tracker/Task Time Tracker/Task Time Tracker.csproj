@@ -77,8 +77,12 @@
     <Compile Include="Model\ComboBoxPairs.cs" />
     <Compile Include="Model\Project.cs" />
     <Compile Include="Model\ProjectTask.cs" />
+    <Compile Include="Model\User.cs" />
     <Compile Include="NewMeetingWindow.xaml.cs">
       <DependentUpon>NewMeetingWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="NewTaskWindow.xaml.cs">
+      <DependentUpon>NewTaskWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="TimeTrackerWindow.xaml.cs">
       <DependentUpon>TimeTrackerWindow.xaml</DependentUpon>
@@ -97,6 +101,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="NewMeetingWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="NewTaskWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

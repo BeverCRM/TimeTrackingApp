@@ -8,11 +8,23 @@
         Icon="Resources\Main.ico"
         Title="Time Tracking App" Height="350" Width="430">
     
-    <Grid Margin="0,0,2,0" Background="GhostWhite">
-        <TextBox x:Name="LoginBox" HorizontalAlignment="Left" Height="23" Margin="155,114,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="147" TabIndex="0"/>
-        <Label Content="Login:" HorizontalAlignment="Left" Margin="103,111,0,0" VerticalAlignment="Top"/>
-        <Button Content="Login" HorizontalAlignment="Left" Margin="170,244,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
-        <Label Content="Password:" HorizontalAlignment="Left" Margin="82,158,0,0" VerticalAlignment="Top"/>
-        <PasswordBox x:Name="PasswordBox" HorizontalAlignment="Left" Height="23" Margin="155,161,0,0" VerticalAlignment="Top" Width="147" TabIndex="1" KeyDown="onPasswordBoxKeyDown"/>
-    </Grid>
+    <StackPanel Background="WhiteSmoke">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.5*" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="Login:" Margin="100 110 0 0"/>
+            <TextBox Grid.Column="1" x:Name="LoginBox" Padding="2" Margin="0 110 100 0"/>
+        </Grid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.5*" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="Password:" Margin="100 15 0 0" />
+            <PasswordBox Grid.Column="1" x:Name="PasswordBox" Padding="2" Margin="0 15 100 0" KeyDown="OnPasswordBoxKeyDown" />
+        </Grid>
+        <Button Content="Login" Padding="20 2" Margin="0 25 0 0" HorizontalAlignment="Center" Click="LoginButton_Click"/>
+    </StackPanel>
 </Window>

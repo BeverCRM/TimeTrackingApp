@@ -281,7 +281,15 @@ namespace Task_Time_Tracker
         private void MenuNewMeeting_Click(object sender, RoutedEventArgs e)
         {
             NewMeetingWindow newMeetingWindow = new NewMeetingWindow(crmConnector);
-            newMeetingWindow.Show();
+            newMeetingWindow.Owner = this;
+            newMeetingWindow.ShowDialog();
+        }
+
+        private void MenuNewTask_Click(object sender, RoutedEventArgs e)
+        {
+            NewTaskWindow newTaskWindow = new NewTaskWindow(crmConnector);
+            newTaskWindow.Owner = this;
+            newTaskWindow.ShowDialog();
         }
     }
 }

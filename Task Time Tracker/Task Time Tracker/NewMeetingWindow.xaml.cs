@@ -1,18 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using Task_Time_Tracker.Model;
 using Task_Time_Tracker.Utility_Functions;
 
@@ -45,12 +36,12 @@ namespace Task_Time_Tracker
             }
             ProjectComboBox.ItemsSource = projectCBP;
 
-            CompletedDatePicker.DataContext = DateTime.Now;
+            CompletedDatePicker.SelectedDate = DateTime.Now;
         }
 
         private void CreateButton_Click(object sender, RoutedEventArgs e)
         {
-            if (Decimal.TryParse(Duration.Text, out Decimal duration))
+            if (Decimal.TryParse(DurationBox.Text, out Decimal duration))
             {
                 crmConnector.CreateMeeting(((ComboBoxPairs)ProjectComboBox.SelectedItem).Value, DescriptionBox.Text,
                     CompletedDatePicker.SelectedDate, duration * 60);
@@ -59,7 +50,7 @@ namespace Task_Time_Tracker
             }
             else
             {
-                Duration.Text = "";
+                DurationBox.Text = "";
                 MessageBox.Show("Please enter a valid duration!");
             }
         }

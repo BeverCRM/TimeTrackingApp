@@ -6,7 +6,7 @@
         ResizeMode="CanMinimize"
         mc:Ignorable="d"
         Icon="Resources\Main.ico"
-        Title="Time Tracking App" Height="470" Width="355">
+        Title="Time Tracking App" Height="470" Width="350">
     
     <Window.Resources>
         <ItemsPanelTemplate x:Key="MenuItemPanelTemplate">
@@ -23,7 +23,7 @@
             <MenuItem Header="File">
                 <MenuItem Header="New">
                     <MenuItem Header="Meeting" Click="MenuNewMeeting_Click"/>
-                    <MenuItem Header="Task" />
+                    <MenuItem Header="Task" Click="MenuNewTask_Click"/>
                 </MenuItem>
                 <Separator />
                 <MenuItem Header="Sign Out" Click="MenuSignOut_Click"/>

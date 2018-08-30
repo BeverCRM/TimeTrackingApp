@@ -69,7 +69,7 @@ namespace Task_Time_Tracker.Utility_Functions
 
         public List<Project> RetrieveAllProjects()
         {
-            List<Project> Projects = new List<Project>();
+            List<Project> projects = new List<Project>();
             
             string fetch = "<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='true' >" +
                            "<entity name='bvrcrm_project'>" +
@@ -78,17 +78,41 @@ namespace Task_Time_Tracker.Utility_Functions
                            "</entity>" +
                            "</fetch>";
 
-            EntityCollection projects = service.RetrieveMultiple(new FetchExpression(fetch));
+            EntityCollection projectCollection = service.RetrieveMultiple(new FetchExpression(fetch));
 
-            foreach (Entity project in projects.Entities)
+            foreach (Entity project in projectCollection.Entities)
             {
                 Project projectElement = new Project();
                 projectElement.ProjectName = project["bvrcrm_name"].ToString();
                 projectElement.ProjectId = (Guid)project["bvrcrm_projectid"];
-                Projects.Add(projectElement);
+                projects.Add(projectElement);
             }
 
-            return Projects;
+            return projects;
+        }
+
+        public List<User> RetrieveAllUsers()
+        {
+            List<User> users = new List<User>();
+
+            string fetch = "<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='true' >" +
+                           "<entity name='systemuser'>" +
+                           "<attribute name='fullname'/>" +
+                           "<attribute name='systemuserid'/>" +
+                           "</entity>" +
+                           "</fetch>";
+
+            EntityCollection userCollection = service.RetrieveMultiple(new FetchExpression(fetch));
+
+            foreach (Entity user in userCollection.Entities)
+            {
+                User userElement = new User();
+                userElement.UserName = user.GetAttributeValue<string>("fullname");
+                userElement.UserId = (Guid)user["systemuserid"];
+                users.Add(userElement);
+            }
+
+            return users;
         }
 
         public List<Project> RetrieveProjects()
@@ -275,9 +299,10 @@ namespace Task_Time_Tracker.Utility_Functions
         {
             try
             {
-                /// Creates a project for the meeting
+                /// Get the owner of the project
                 Entity project = service.Retrieve("bvrcrm_project", projectId, new ColumnSet("bvrcrm_customer"));
-                MessageBox.Show(duration.ToString());
+
+                /// Creates a project for the meeting
                 Entity task = new Entity("bvrcrm_projecttask");
 
                 task["bvrcrm_name"] = description;
@@ -320,6 +345,42 @@ namespace Task_Time_Tracker.Utility_Functions
             {
                 MessageBox.Show(ex.ToString());
             }
+        }
+
+        public void CreateTask(Guid projectId, string taskName, Guid ownerId, string priority,
+            DateTime? dueDate, Decimal estimatedHours, string description)
+        {
+            /// Get the owner of the project
+            Entity project = service.Retrieve("bvrcrm_project", projectId, new ColumnSet("bvrcrm_customer"));
+
+            /// Create a project for the meeting
+            Entity task = new Entity("bvrcrm_projecttask");
+
+            task["bvrcrm_name"] = taskName;
+            task["bvrcrm_customer"] = project.GetAttributeValue<EntityReference>("bvrcrm_customer");
+            task["bvrcrm_project"] = project.ToEntityReference();
+            task["ownerid"] = new EntityReference("systemuser", ownerId);
+
+            switch(priority)
+            {
+                case "High":
+                    task["bvrcrm_priority"] = new OptionSetValue(744240000);
+                    break;
+                case "Meidum":
+                    task["bvrcrm_priority"] = new OptionSetValue(744240001);
+                    break;
+                case "Low":
+                    task["bvrcrm_priority"] = new OptionSetValue(744240002);
+                    break;
+            }
+
+            if (dueDate != null)
+                task["bvrcrm_due_date"] = dueDate;
+
+            task["bvrcrm_estimated_hours"] = estimatedHours;
+            task["bvrcrm_description"] = description;
+
+            Guid taskId = service.Create(task);
         }
     }
 }
