@@ -14,29 +14,34 @@ namespace Task_Time_Tracker
     /// </summary>
     public partial class NewMeetingWindow : Window
     {
-        CRM_Connector crmConnector;
+        CrmConnector crmConnector;
 
         ObservableCollection<ComboBoxPairs> projectCBP;
 
-        public NewMeetingWindow(CRM_Connector Connector)
+        public NewMeetingWindow(CrmConnector Connector)
         {
             InitializeComponent();
 
             crmConnector = Connector;
 
+            CompletedDatePicker.SelectedDate = DateTime.Now;
+
+            RetrieveProjects();
+        }
+
+        private async void RetrieveProjects()
+        {
             ProjectComboBox.DisplayMemberPath = "Text";
             ProjectComboBox.SelectedValuePath = "Value";
 
             projectCBP = new ObservableCollection<ComboBoxPairs>();
-            List<Project> projects = crmConnector.RetrieveAllProjects();
+            List<Project> projects = await crmConnector.RetrieveAllProjectsAsync();
 
             foreach (Project project in projects)
             {
                 projectCBP.Add(new ComboBoxPairs(project.ProjectName, project.ProjectId));
             }
             ProjectComboBox.ItemsSource = projectCBP;
-
-            CompletedDatePicker.SelectedDate = DateTime.Now;
         }
 
         private void CreateButton_Click(object sender, RoutedEventArgs e)

@@ -18,19 +18,19 @@ namespace Task_Time_Tracker
     /// </summary>
     public partial class TimeTrackerWindow : Window
     {
-        CRM_Connector crmConnector;
+        private readonly CrmConnector _crmConnector;
 
         ObservableCollection<ComboBoxPairs1> taskCBP;
         ObservableCollection<ComboBoxPairs> projectCBP;
 
-        DispatcherTimer timer;
-        int minutes = 0;
-        int hours = 0;
-        int currentMinutes = 0;
+        private DispatcherTimer timer;
+        private int minutes = 0;
+        private int hours = 0;
+        private int currentMinutes = 0;
 
         NotifyIcon ni;
 
-        public TimeTrackerWindow(CRM_Connector Connector)
+        public TimeTrackerWindow(CrmConnector Connector)
         {
             InitializeComponent();
 
@@ -38,8 +38,7 @@ namespace Task_Time_Tracker
             StreamResourceInfo sri = System.Windows.Application.GetResourceStream(new Uri("Task Time Tracker;component/Resources/SystemTray.ico", UriKind.Relative));
             ni.Icon = new Icon(sri.Stream);
             ni.Visible = false;
-            ni.Click +=
-            delegate (object sender, EventArgs args)
+            ni.Click += delegate (object sender, EventArgs args)
             {
                 Show();
                 WindowState = WindowState.Normal;
@@ -48,28 +47,37 @@ namespace Task_Time_Tracker
 
             timer = new DispatcherTimer();
 
-            crmConnector = Connector;
+            _crmConnector = Connector;
 
-            currentUserLabel.Content = "Welcome, " + crmConnector.GetCurrentUserName();
+            RetrieveProjects();
+            RetrieveUserName();
+        }
 
+        private async void RetrieveProjects()
+        {
             TaskComboBox.DisplayMemberPath = "Text";
             TaskComboBox.SelectedValuePath = "Value";
-            
+
             ProjectComboBox.DisplayMemberPath = "Text";
             ProjectComboBox.SelectedValuePath = "Value";
 
+            StartButton.IsEnabled = false;
+            StopButton.IsEnabled = false;
+            CompleteButton.IsEnabled = false;
+
             projectCBP = new ObservableCollection<ComboBoxPairs>();
-            List<Project> projects = crmConnector.RetrieveProjects();
+            List<Project> projects = await _crmConnector.RetrieveProjectsAsync();
 
             foreach (Project project in projects)
             {
                 projectCBP.Add(new ComboBoxPairs(project.ProjectName, project.ProjectId));
             }
             ProjectComboBox.ItemsSource = projectCBP;
+        }
 
-            StartButton.IsEnabled = false;
-            StopButton.IsEnabled = false;
-            CompleteButton.IsEnabled = false;
+        private async void RetrieveUserName()
+        {
+            currentUserLabel.Content = "Welcome, " + await _crmConnector.GetCurrentUserNameAsync();
         }
 
         protected override void OnStateChanged(EventArgs e)
@@ -100,11 +108,11 @@ namespace Task_Time_Tracker
             base.OnClosing(e);
         }
 
-        private void ProjectComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void ProjectComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (ProjectComboBox.SelectedItem != null)
             {
-                List<ProjectTask> tasks = crmConnector.RetrieveTasks(((ComboBoxPairs)ProjectComboBox.SelectedItem).Value);
+                List<ProjectTask> tasks = await _crmConnector.RetrieveTasksAsync(((ComboBoxPairs)ProjectComboBox.SelectedItem).Value);
                 taskCBP = new ObservableCollection<ComboBoxPairs1>();
                 foreach (ProjectTask task in tasks)
                 {
@@ -127,7 +135,7 @@ namespace Task_Time_Tracker
             }
         }
 
-        private void StartButton_Click(object sender, RoutedEventArgs e)
+        private async void StartButton_Click(object sender, RoutedEventArgs e)
         {
             if (DescriptionBox.Text == "")
                 System.Windows.MessageBox.Show("No description provided. It is recommended to provide description");
@@ -142,7 +150,7 @@ namespace Task_Time_Tracker
             TaskComboBox.IsEnabled = false;
             ProjectComboBox.IsEnabled = false;
 
-            minutes = crmConnector.RetrieveTaskMinutes(((ComboBoxPairs)ProjectComboBox.SelectedItem).Value, ((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.TaskId);
+            minutes = await _crmConnector.RetrieveTaskMinutesAsync(((ComboBoxPairs)ProjectComboBox.SelectedItem).Value, ((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.TaskId);
             hours = minutes / 60;
             minutes = minutes % 60;
             if (hours < 10)
@@ -158,7 +166,7 @@ namespace Task_Time_Tracker
             timer.Tick += TimerTick;
             timer.Start();
 
-            crmConnector.UpdateTaskStatus(((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.TaskId);
+            _crmConnector.UpdateTaskStatus(((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.TaskId);
         }
 
         void TimerTick(object sender, EventArgs e)
@@ -201,7 +209,7 @@ namespace Task_Time_Tracker
             timer.Stop();
 
             if(currentMinutes>0)
-                crmConnector.AddMinutes(currentMinutes, ((ComboBoxPairs)ProjectComboBox.SelectedItem).Value, ((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.TaskId, DescriptionBox.Text);
+                _crmConnector.AddMinutes(currentMinutes, ((ComboBoxPairs)ProjectComboBox.SelectedItem).Value, ((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.TaskId, DescriptionBox.Text);
 
             currentMinutes = 0;
             minutes = 0;
@@ -216,17 +224,16 @@ namespace Task_Time_Tracker
             if (result == MessageBoxResult.Yes)
             {
                 DescriptionBox.Text = "";
-                crmConnector.CompleteTaskStatus(((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.TaskId);
+                _crmConnector.CompleteTaskStatus(((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.TaskId);
                 RefreshTasks();
             }
         }
-
 
         public void SendCollectedTime()
         {
             try
             {
-                crmConnector.AddMinutes(currentMinutes, ((ComboBoxPairs)ProjectComboBox.SelectedItem).Value, ((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.TaskId, DescriptionBox.Text);
+                _crmConnector.AddMinutes(currentMinutes, ((ComboBoxPairs)ProjectComboBox.SelectedItem).Value, ((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.TaskId, DescriptionBox.Text);
                 currentMinutes = 0;
             }
             catch(Exception ex)
@@ -235,7 +242,7 @@ namespace Task_Time_Tracker
             }
         }
 
-        public void RefreshTasks()
+        public async void RefreshTasks()
         {
             PriorityLabel.Content = "";
             DueDateLabel.Content = "";
@@ -252,7 +259,7 @@ namespace Task_Time_Tracker
             if(projectCBP!=null)
             projectCBP.Clear();
 
-            List<Project> projects = crmConnector.RetrieveProjects();
+            List<Project> projects = await _crmConnector.RetrieveProjectsAsync();
          
             foreach (Project project in projects)
             {
@@ -280,14 +287,14 @@ namespace Task_Time_Tracker
 
         private void MenuNewMeeting_Click(object sender, RoutedEventArgs e)
         {
-            NewMeetingWindow newMeetingWindow = new NewMeetingWindow(crmConnector);
+            NewMeetingWindow newMeetingWindow = new NewMeetingWindow(_crmConnector);
             newMeetingWindow.Owner = this;
             newMeetingWindow.ShowDialog();
         }
 
         private void MenuNewTask_Click(object sender, RoutedEventArgs e)
         {
-            NewTaskWindow newTaskWindow = new NewTaskWindow(crmConnector);
+            NewTaskWindow newTaskWindow = new NewTaskWindow(_crmConnector);
             newTaskWindow.Owner = this;
             newTaskWindow.ShowDialog();
         }

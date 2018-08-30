@@ -13,11 +13,11 @@ namespace Task_Time_Tracker
     /// </summary>
     public partial class MainWindow : Window
     {
-        public CRM_Connector crmConnector;
+        private CrmConnector crmConnector;
         
         public MainWindow()
         {
-            String thisprocessname = Process.GetCurrentProcess().ProcessName;
+            string thisprocessname = Process.GetCurrentProcess().ProcessName;
 
             if (Process.GetProcesses().Count(p => p.ProcessName == thisprocessname) > 1)
             {
@@ -42,21 +42,25 @@ namespace Task_Time_Tracker
                 Login();
         }
 
-        private void Login()
+        private async void Login()
         {
             string userName = LoginBox.Text;
             string password = PasswordBox.Password;
 
             if (userName == "" || password == "")
+            {
                 MessageBox.Show("Please provide your CRM credentials.");
+            }
             else
             {
-                crmConnector = new CRM_Connector(userName, password, "https://bever.bever.am/XRMServices/2011/Organization.svc");
+                crmConnector = new CrmConnector(userName, password, "https://bever.bever.am/XRMServices/2011/Organization.svc");
 
-                Tuple<string, string> connectionStatus = crmConnector.Connect_To_MSCRM();
+                Tuple<string, string> connectionStatus = await crmConnector.ConnectToMSCRMAsync();
 
                 if (connectionStatus.Item1 != "0")
+                {
                     MessageBox.Show(connectionStatus.Item2);
+                }
                 else
                 {
                     TimeTrackerWindow timeTrackerWindow = new TimeTrackerWindow(crmConnector);

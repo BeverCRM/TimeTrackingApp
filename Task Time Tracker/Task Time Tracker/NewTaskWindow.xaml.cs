@@ -14,38 +14,47 @@ namespace Task_Time_Tracker
     /// </summary>
     public partial class NewTaskWindow : Window
     {
-        CRM_Connector crmConnector;
+        CrmConnector crmConnector;
 
         ObservableCollection<ComboBoxPairs> projectCBP;
         ObservableCollection<ComboBoxPairs> userCBP;
 
-        public NewTaskWindow(CRM_Connector Connector)
+        public NewTaskWindow(CrmConnector Connector)
         {
             InitializeComponent();
 
             crmConnector = Connector;
 
+            RetrieveProjects();
+            RetrieveUsers();
+        }
+
+        private async void RetrieveProjects()
+        {
             /// Set Project Combo Box Display Member and Value
             ProjectComboBox.DisplayMemberPath = "Text";
             ProjectComboBox.SelectedValuePath = "Value";
 
             /// Retrieve all the projects
             projectCBP = new ObservableCollection<ComboBoxPairs>();
-            List<Project> projects = crmConnector.RetrieveAllProjects();
+            List<Project> projects = await crmConnector.RetrieveAllProjectsAsync();
 
             foreach (Project project in projects)
             {
                 projectCBP.Add(new ComboBoxPairs(project.ProjectName, project.ProjectId));
             }
             ProjectComboBox.ItemsSource = projectCBP;
+        }
 
+        private async void RetrieveUsers()
+        {
             /// Set Responsible Combo Box Display Member and Value
             ResponsibleComboBox.DisplayMemberPath = "Text";
             ResponsibleComboBox.SelectedValuePath = "Value";
 
             /// Retrieve all the users
             userCBP = new ObservableCollection<ComboBoxPairs>();
-            List<User> users = crmConnector.RetrieveAllUsers();
+            List<User> users = await crmConnector.RetrieveAllUsersAsync();
 
             foreach (User user in users)
             {
