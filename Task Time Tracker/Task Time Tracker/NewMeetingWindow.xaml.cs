@@ -46,17 +46,20 @@ namespace Task_Time_Tracker
 
         private void CreateButton_Click(object sender, RoutedEventArgs e)
         {
-            if (Decimal.TryParse(DurationBox.Text, out Decimal duration))
+            if (IsInformationProvided())
             {
-                crmConnector.CreateMeeting(((ComboBoxPairs)ProjectComboBox.SelectedItem).Value, DescriptionBox.Text,
-                    CompletedDatePicker.SelectedDate, duration * 60);
+                if (decimal.TryParse(DurationBox.Text, out decimal duration))
+                {
+                    crmConnector.CreateMeeting(((ComboBoxPairs)ProjectComboBox.SelectedItem).Value, DescriptionBox.Text,
+                        CompletedDatePicker.SelectedDate, duration * 60);
 
-                Close();
-            }
-            else
-            {
-                DurationBox.Text = "";
-                MessageBox.Show("Please enter a valid duration!");
+                    Close();
+                }
+                else
+                {
+                    DurationBox.Text = "";
+                    MessageBox.Show("Please enter a valid duration!");
+                }
             }
         }
 
@@ -64,6 +67,17 @@ namespace Task_Time_Tracker
         {
             Regex regex = new Regex("^[.][0-9]+$|^[0-9]*[.]{0,1}[0-9]*$");
             e.Handled = !regex.IsMatch(e.Text);
+        }
+
+        private bool IsInformationProvided()
+        {
+            if (ProjectComboBox.SelectedItem == null)
+            {
+                MessageBox.Show("Please choose a valid project!");
+                return false;
+            }
+
+            return true;
         }
     }
 }

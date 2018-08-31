@@ -65,20 +65,22 @@ namespace Task_Time_Tracker
 
         private void CreateButton_Click(object sender, RoutedEventArgs e)
         {
-            if (Decimal.TryParse(EstimatedHoursBox.Text, out Decimal estimatedHours))
+            if (IsInformationProvided())
             {
-                string priority = PriorityComboBox.Text;
-                MessageBox.Show(priority);
-                crmConnector.CreateTask(((ComboBoxPairs)ProjectComboBox.SelectedItem).Value, TaskNameBox.Text,
-                    ((ComboBoxPairs)ResponsibleComboBox.SelectedItem).Value, PriorityComboBox.Text,
-                    DueDatePicker.SelectedDate, estimatedHours, DescriptionBox.Text);
+                if (decimal.TryParse(EstimatedHoursBox.Text, out decimal estimatedHours))
+                {
+                    string priority = PriorityComboBox.Text;
+                    crmConnector.CreateTask(((ComboBoxPairs)ProjectComboBox.SelectedItem).Value, TaskNameBox.Text,
+                        ((ComboBoxPairs)ResponsibleComboBox.SelectedItem).Value, PriorityComboBox.Text,
+                        DueDatePicker.SelectedDate, estimatedHours, DescriptionBox.Text);
 
-                Close();
-            }
-            else
-            {
-                EstimatedHoursBox.Text = "";
-                MessageBox.Show("Please enter a valid estimation of hours!");
+                    Close();
+                }
+                else
+                {
+                    EstimatedHoursBox.Text = "";
+                    MessageBox.Show("Please enter a valid estimation of hours!");
+                }
             }
         }
 
@@ -86,6 +88,23 @@ namespace Task_Time_Tracker
         {
             Regex regex = new Regex("^[.][0-9]+$|^[0-9]*[.]{0,1}[0-9]*$");
             e.Handled = !regex.IsMatch(e.Text);
+        }
+
+        private bool IsInformationProvided()
+        {
+            if (ProjectComboBox.SelectedItem == null)
+            {
+                MessageBox.Show("Please choose a valid project!");
+                return false;
+            }
+
+            if (TaskNameBox.Text == "")
+            {
+                MessageBox.Show("Please enter a task name!");
+                return false;
+            }
+
+            return true;
         }
     }
 }
