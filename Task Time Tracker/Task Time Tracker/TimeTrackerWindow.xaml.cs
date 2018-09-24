@@ -106,7 +106,9 @@ namespace Task_Time_Tracker
                 case MessageBoxResult.Yes:
                     timer.Stop();
                     if (currentMinutes != 0)
+                    {
                         SendCollectedTime();
+                    }
                     break;
                 case MessageBoxResult.No:
                     e.Cancel = true;
