@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -14,16 +13,16 @@ namespace Task_Time_Tracker
     /// </summary>
     public partial class NewTaskWindow : Window
     {
-        CrmConnector crmConnector;
+        private readonly CrmConnector _crmConnector;
 
-        ObservableCollection<ComboBoxPairs> projectCBP;
-        ObservableCollection<ComboBoxPairs> userCBP;
+        private ObservableCollection<ComboBoxPairs> projectCBP;
+        private ObservableCollection<ComboBoxPairs> userCBP;
 
-        public NewTaskWindow(CrmConnector Connector)
+        public NewTaskWindow(CrmConnector connector)
         {
             InitializeComponent();
 
-            crmConnector = Connector;
+            _crmConnector = connector;
 
             RetrieveProjects();
             RetrieveUsers();
@@ -37,7 +36,7 @@ namespace Task_Time_Tracker
 
             /// Retrieve all the projects
             projectCBP = new ObservableCollection<ComboBoxPairs>();
-            List<Project> projects = await crmConnector.RetrieveAllProjectsAsync();
+            List<Project> projects = await _crmConnector.RetrieveAllProjectsAsync();
 
             foreach (Project project in projects)
             {
@@ -54,7 +53,7 @@ namespace Task_Time_Tracker
 
             /// Retrieve all the users
             userCBP = new ObservableCollection<ComboBoxPairs>();
-            List<User> users = await crmConnector.RetrieveAllUsersAsync();
+            List<User> users = await _crmConnector.RetrieveAllUsersAsync();
 
             foreach (User user in users)
             {
@@ -70,7 +69,7 @@ namespace Task_Time_Tracker
                 if (decimal.TryParse(EstimatedHoursBox.Text, out decimal estimatedHours))
                 {
                     string priority = PriorityComboBox.Text;
-                    crmConnector.CreateTask(((ComboBoxPairs)ProjectComboBox.SelectedItem).Value, TaskNameBox.Text,
+                    _crmConnector.CreateTask(((ComboBoxPairs)ProjectComboBox.SelectedItem).Value, TaskNameBox.Text,
                         ((ComboBoxPairs)ResponsibleComboBox.SelectedItem).Value, PriorityComboBox.Text,
                         DueDatePicker.SelectedDate, estimatedHours, DescriptionBox.Text);
 

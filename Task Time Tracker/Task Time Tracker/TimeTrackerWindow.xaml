@@ -24,6 +24,7 @@
                 <MenuItem Header="New">
                     <MenuItem Header="Meeting" Click="MenuNewMeeting_Click"/>
                     <MenuItem Header="Task" Click="MenuNewTask_Click"/>
+                    <MenuItem Header="Tfs Task" Click="MenuNewTfsTask_Click" />
                 </MenuItem>
                 <Separator />
                 <MenuItem Header="Sign Out" Click="MenuSignOut_Click"/>
@@ -49,7 +50,7 @@
             <Label Content="Due Date:" HorizontalAlignment="Left" Height="29" Margin="178,164,0,0" VerticalAlignment="Top" Width="62"/>
             <Label x:Name="PriorityLabel" Content="" HorizontalAlignment="Left" Height="29" Margin="76,164,0,0" VerticalAlignment="Top" Width="86"/>
             <Label x:Name="DueDateLabel" Content="" HorizontalAlignment="Left" Height="29" Margin="245,164,0,0" VerticalAlignment="Top" Width="86"/>
-            <Label x:Name="currentUserLabel" Content="Welcome, Rub0" HorizontalAlignment="Left" Margin="13,39,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.583,0.416"/>
+            <Label x:Name="currentUserLabel" Content="Welcome, User" HorizontalAlignment="Left" Margin="13,39,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.583,0.416"/>
             <Button x:Name="RefreshButton"  HorizontalAlignment="Left" Margin="269,72,0,0" VerticalAlignment="Top" Width="25" Height="20" Background="Transparent" BorderBrush="Transparent" Click="RefreshButton_Click">
                 <Image Source="Images/refresh.png"></Image>
             </Button>

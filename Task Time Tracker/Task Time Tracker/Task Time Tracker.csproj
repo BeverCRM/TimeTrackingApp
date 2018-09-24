@@ -39,16 +39,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Crm.Sdk.Proxy, Version=9.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.CrmSdk.CoreAssemblies.9.0.2.4\lib\net452\Microsoft.Crm.Sdk.Proxy.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.IdentityModel, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.6.1.7600.16394\lib\net35\Microsoft.IdentityModel.dll</HintPath>
+      <HintPath>..\packages\Microsoft.CrmSdk.CoreAssemblies.9.0.2.5\lib\net452\Microsoft.Crm.Sdk.Proxy.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Xrm.Sdk, Version=9.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.CrmSdk.CoreAssemblies.9.0.2.4\lib\net452\Microsoft.Xrm.Sdk.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Xrm.Sdk.Async, Version=8.0.4.0, Culture=neutral, PublicKeyToken=a8df12b319ac2dd1, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.CrmSdk.CoreAssemblies.Async.8.0.4.0\lib\net452\Microsoft.Xrm.Sdk.Async.dll</HintPath>
+      <HintPath>..\packages\Microsoft.CrmSdk.CoreAssemblies.9.0.2.5\lib\net452\Microsoft.Xrm.Sdk.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -81,19 +75,27 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Model\ComboBoxPairs.cs" />
-    <Compile Include="Model\Project.cs" />
-    <Compile Include="Model\ProjectTask.cs" />
-    <Compile Include="Model\User.cs" />
+    <Compile Include="Model\CRM\Project.cs" />
+    <Compile Include="Model\CRM\ProjectTask.cs" />
+    <Compile Include="Model\CRM\User.cs" />
+    <Compile Include="Model\Deserialiser.cs" />
+    <Compile Include="Model\TFS\TaskAttributes.cs" />
+    <Compile Include="Model\TFS\TaskItem.cs" />
+    <Compile Include="Model\TFS\TaskList.cs" />
     <Compile Include="NewMeetingWindow.xaml.cs">
       <DependentUpon>NewMeetingWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="NewTaskWindow.xaml.cs">
       <DependentUpon>NewTaskWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="NewTfsTaskWindow.xaml.cs">
+      <DependentUpon>NewTfsTaskWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TimeTrackerWindow.xaml.cs">
       <DependentUpon>TimeTrackerWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utility Functions\CrmConnector.cs" />
+    <Compile Include="Utility Functions\TfsConnector.cs" />
     <Page Include="LoginWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -111,6 +113,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="NewTaskWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="NewTfsTaskWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

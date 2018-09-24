@@ -14,15 +14,15 @@ namespace Task_Time_Tracker
     /// </summary>
     public partial class NewMeetingWindow : Window
     {
-        CrmConnector crmConnector;
+        private readonly CrmConnector _crmConnector;
 
-        ObservableCollection<ComboBoxPairs> projectCBP;
+        private ObservableCollection<ComboBoxPairs> projectCBP;
 
-        public NewMeetingWindow(CrmConnector Connector)
+        public NewMeetingWindow(CrmConnector connector)
         {
             InitializeComponent();
 
-            crmConnector = Connector;
+            _crmConnector = connector;
 
             CompletedDatePicker.SelectedDate = DateTime.Now;
 
@@ -35,7 +35,7 @@ namespace Task_Time_Tracker
             ProjectComboBox.SelectedValuePath = "Value";
 
             projectCBP = new ObservableCollection<ComboBoxPairs>();
-            List<Project> projects = await crmConnector.RetrieveAllProjectsAsync();
+            List<Project> projects = await _crmConnector.RetrieveAllProjectsAsync();
 
             foreach (Project project in projects)
             {
@@ -50,7 +50,7 @@ namespace Task_Time_Tracker
             {
                 if (decimal.TryParse(DurationBox.Text, out decimal duration))
                 {
-                    crmConnector.CreateMeeting(((ComboBoxPairs)ProjectComboBox.SelectedItem).Value, DescriptionBox.Text,
+                    _crmConnector.CreateMeeting(((ComboBoxPairs)ProjectComboBox.SelectedItem).Value, DescriptionBox.Text,
                         CompletedDatePicker.SelectedDate, duration * 60);
 
                     Close();

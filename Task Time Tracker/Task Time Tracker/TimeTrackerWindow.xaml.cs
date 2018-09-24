@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
@@ -20,20 +21,32 @@ namespace Task_Time_Tracker
     {
         private readonly CrmConnector _crmConnector;
 
-        ObservableCollection<ComboBoxPairs1> taskCBP;
-        ObservableCollection<ComboBoxPairs> projectCBP;
+        private ObservableCollection<ComboBoxPairs1> taskCBP;
+        private ObservableCollection<ComboBoxPairs> projectCBP;
 
         private DispatcherTimer timer;
         private int minutes = 0;
         private int hours = 0;
         private int currentMinutes = 0;
 
-        NotifyIcon ni;
+        private NotifyIcon ni;
 
         public TimeTrackerWindow(CrmConnector Connector)
         {
             InitializeComponent();
 
+            SetNotifyIcon();
+
+            timer = new DispatcherTimer();
+
+            _crmConnector = Connector;
+
+            RetrieveProjects();
+            RetrieveUserName();
+        }
+
+        private void SetNotifyIcon()
+        {
             ni = new NotifyIcon();
             StreamResourceInfo sri = System.Windows.Application.GetResourceStream(new Uri("Task Time Tracker;component/Resources/SystemTray.ico", UriKind.Relative));
             ni.Icon = new Icon(sri.Stream);
@@ -44,13 +57,6 @@ namespace Task_Time_Tracker
                 WindowState = WindowState.Normal;
                 ni.Visible = false;
             };
-
-            timer = new DispatcherTimer();
-
-            _crmConnector = Connector;
-
-            RetrieveProjects();
-            RetrieveUserName();
         }
 
         private async void RetrieveProjects()
@@ -83,7 +89,9 @@ namespace Task_Time_Tracker
         protected override void OnStateChanged(EventArgs e)
         {
             if (WindowState == WindowState.Minimized)
+            {
                 Hide();
+            }
 
             ni.Visible = true;
             base.OnStateChanged(e);
@@ -128,9 +136,14 @@ namespace Task_Time_Tracker
             {
                 PriorityLabel.Content = ((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.Priority;
                 if (((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.DueDate != DateTime.MinValue)
+                {
                     DueDateLabel.Content = ((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.DueDate.AddDays(1).ToString("d");
+                }
                 else
+                {
                     DueDateLabel.Content = "";
+                }
+
                 StartButton.IsEnabled = true;
             }
         }
@@ -138,7 +151,9 @@ namespace Task_Time_Tracker
         private async void StartButton_Click(object sender, RoutedEventArgs e)
         {
             if (DescriptionBox.Text == "")
+            {
                 System.Windows.MessageBox.Show("No description provided. It is recommended to provide description");
+            }
 
             DescriptionBox.IsEnabled = false;
             StartButton.IsEnabled = false;
@@ -150,23 +165,40 @@ namespace Task_Time_Tracker
             TaskComboBox.IsEnabled = false;
             ProjectComboBox.IsEnabled = false;
 
+            _crmConnector.UpdateTaskStatus(((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.TaskId);
+
+            await GetTime();
+            SetTimer();
+        }
+
+        private void SetTimer()
+        {
+            timer.Interval = new TimeSpan(0, 1, 0);
+            timer.Tick += TimerTick;
+            timer.Start();
+        }
+
+        private async Task GetTime()
+        {
             minutes = await _crmConnector.RetrieveTaskMinutesAsync(((ComboBoxPairs)ProjectComboBox.SelectedItem).Value, ((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.TaskId);
             hours = minutes / 60;
             minutes = minutes % 60;
             if (hours < 10)
+            {
                 Time.Content = "0" + hours.ToString() + ":";
+            }
             else
+            {
                 Time.Content = hours.ToString() + ":";
+            }
             if (minutes < 10)
+            {
                 Time.Content += "0" + minutes.ToString();
+            }
             else
+            {
                 Time.Content += minutes.ToString();
-
-            timer.Interval = new TimeSpan(0, 1, 0);
-            timer.Tick += TimerTick;
-            timer.Start();
-
-            _crmConnector.UpdateTaskStatus(((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.TaskId);
+            }
         }
 
         void TimerTick(object sender, EventArgs e)
@@ -180,16 +212,26 @@ namespace Task_Time_Tracker
                 hours++;
             }
             if (hours < 10)
+            {
                 Time.Content = "0" + hours.ToString() + ":";
+            }
             else
+            {
                 Time.Content = hours.ToString() + ":";
+            }
             if (minutes < 10)
+            {
                 Time.Content += "0" + minutes.ToString();
+            }
             else
+            {
                 Time.Content += minutes.ToString();
+            }
 
-            if (currentMinutes != 0 && currentMinutes % 20==0)
+            if (currentMinutes != 0 && currentMinutes % 20 == 0)
+            {
                 SendCollectedTime();
+            }
         }
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
@@ -209,7 +251,9 @@ namespace Task_Time_Tracker
             timer.Stop();
 
             if(currentMinutes>0)
+            {
                 _crmConnector.AddMinutes(currentMinutes, ((ComboBoxPairs)ProjectComboBox.SelectedItem).Value, ((ComboBoxPairs1)TaskComboBox.SelectedItem).Value.TaskId, DescriptionBox.Text);
+            }
 
             currentMinutes = 0;
             minutes = 0;
@@ -250,14 +294,19 @@ namespace Task_Time_Tracker
             StartButton.IsEnabled = false;
             StopButton.IsEnabled = false;
             CompleteButton.IsEnabled = false;
+            //RefreshButton.IsEnabled = false;
 
             DescriptionBox.Text = "";
 
-            if(taskCBP!=null)
-            taskCBP.Clear();
+            if (taskCBP != null)
+            {
+                taskCBP.Clear();
+            }
 
             if(projectCBP!=null)
-            projectCBP.Clear();
+            {
+                projectCBP.Clear();
+            }
 
             List<Project> projects = await _crmConnector.RetrieveProjectsAsync();
          
@@ -266,6 +315,8 @@ namespace Task_Time_Tracker
                 projectCBP.Add(new ComboBoxPairs(project.ProjectName, project.ProjectId));
             }
             ProjectComboBox.ItemsSource = projectCBP;
+
+            //RefreshButton.IsEnabled = true;
         }
 
         private void RefreshButton_Click(object sender, RoutedEventArgs e)
@@ -297,6 +348,13 @@ namespace Task_Time_Tracker
             NewTaskWindow newTaskWindow = new NewTaskWindow(_crmConnector);
             newTaskWindow.Owner = this;
             newTaskWindow.ShowDialog();
+        }
+
+        private void MenuNewTfsTask_Click(object sender, RoutedEventArgs e)
+        {
+            NewTfsTaskWindow newTfsTaskWindow = new NewTfsTaskWindow(_crmConnector);
+            newTfsTaskWindow.Owner = this;
+            newTfsTaskWindow.ShowDialog();
         }
     }
 }

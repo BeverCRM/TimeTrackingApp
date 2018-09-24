@@ -17,18 +17,25 @@ namespace Task_Time_Tracker
         
         public MainWindow()
         {
-            string thisprocessname = Process.GetCurrentProcess().ProcessName;
-
-            if (Process.GetProcesses().Count(p => p.ProcessName == thisprocessname) > 1)
-            {
-                MessageBox.Show("Instance already running");
-                Close();
-            }
-            else
+            if (!InstanceAlreadyRunning())
             {
                 InitializeComponent();
                 LoginBox.Focus();
             }
+        }
+
+        private bool InstanceAlreadyRunning()
+        {
+            string thisProcessName = Process.GetCurrentProcess().ProcessName;
+
+            if (Process.GetProcesses().Count(p => p.ProcessName == thisProcessName) > 1)
+            {
+                MessageBox.Show("Instance already running");
+                Close();
+                return false;
+            }
+
+            return true;
         }
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
@@ -39,7 +46,9 @@ namespace Task_Time_Tracker
         private void OnPasswordBoxKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
+            {
                 Login();
+            }
         }
 
         private async void Login()
