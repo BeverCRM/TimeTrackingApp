@@ -211,18 +211,19 @@ namespace Task_Time_Tracker.Utility_Functions
         public async void AddMinutes(int minutes, Guid projectId, Guid taskId, string description)
         {
             Guid gUserId = await GetUserId();
-            DateTime thisDay = DateTime.Now;
+            DateTime thisDay = DateTime.Now.Date;
 
             string fetch = "<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='true' >";
             fetch += "<entity name='bvrcrm_timetracking'>";
             fetch += "<attribute name='bvrcrm_minutes'/>";
             fetch += "<attribute name='bvrcrm_timetrackingid'/>";
             fetch += "<filter type='and'>";
-            fetch += "<condition attribute='bvrcrm_tracking_date' operator='eq' value='" + thisDay.ToString("MM/dd/yyyy hh:mm:ss") + "'/>";
+            fetch += "<condition attribute='bvrcrm_tracking_date' operator='on' value='" + thisDay.ToString("yyyy-MM-dd") + "'/>";
             fetch += "<condition attribute='ownerid' operator='eq' value='" + gUserId + "'/>";
             fetch += "<condition attribute='bvrcrm_project' operator='eq' value='" + projectId + "'/>";
             fetch += "<condition attribute='bvrcrm_task' operator='eq' value='" + taskId + "'/>";
-            fetch += "<condition attribute='bvrcrm_name' operator='eq' value='" + description + "'/>";
+            fetch += description != "" ? "<condition attribute='bvrcrm_name' operator='eq' value='" + description + "'/>"
+                                       : "<condition attribute='bvrcrm_name' operator='null' />";
             fetch += "</filter>";
             fetch += "</entity>";
             fetch += "</fetch>";
@@ -232,7 +233,7 @@ namespace Task_Time_Tracker.Utility_Functions
             {
                 foreach (Entity timeTracking in timeTrackings.Entities)
                 {
-                    timeTracking["bvrcrm_minutes"] = (Decimal)timeTracking["bvrcrm_minutes"] + Convert.ToDecimal(minutes);
+                    timeTracking["bvrcrm_minutes"] = (decimal)timeTracking["bvrcrm_minutes"] + Convert.ToDecimal(minutes);
                     await Task.Run(() => service.Update(timeTracking));
                 }
             }
@@ -499,7 +500,7 @@ namespace Task_Time_Tracker.Utility_Functions
                     break;
             }
 
-            string[] userName = tfsTask.Fields.Responsible.Split(' ');
+            string[] userName = (tfsTask.Fields.Responsible != null) ? tfsTask.Fields.Responsible.Split(' ') : new string[2] { "", "" };
             Guid taskOwner = await GetUserIdByName(userName[0], userName[1]);
                 
             task.OwnerId = taskOwner;

@@ -46,6 +46,7 @@ namespace Task_Time_Tracker
 
         private void CreateButton_Click(object sender, RoutedEventArgs e)
         {
+            CreateButton.IsEnabled = false;
             if (IsInformationProvided())
             {
                 if (decimal.TryParse(DurationBox.Text, out decimal duration))
@@ -57,9 +58,14 @@ namespace Task_Time_Tracker
                 }
                 else
                 {
+                    CreateButton.IsEnabled = true;
                     DurationBox.Text = "";
                     MessageBox.Show("Please enter a valid duration!");
                 }
+            }
+            else
+            {
+                CreateButton.IsEnabled = true;
             }
         }
 

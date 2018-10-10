@@ -28,6 +28,6 @@
         <TextBox x:Name="EstimatedHoursBox" Padding="2" Margin="10 0" PreviewTextInput="NumberValidationTextBox"/>
         <TextBlock Text="Description" Margin="10 10 0 0" />
         <TextBox x:Name="DescriptionBox" TextWrapping="Wrap" AcceptsReturn="True" Height="60" Padding="2" Margin="10 0" />
-        <Button Padding="15 3" Margin="0 20 0 0" HorizontalAlignment="Center" Content="Create" Click="CreateButton_Click"/>
+        <Button x:Name="CreateButton" Padding="15 3" Margin="0 20 0 0" HorizontalAlignment="Center" Content="Create" Click="CreateButton_Click"/>
     </StackPanel>
 </Window>

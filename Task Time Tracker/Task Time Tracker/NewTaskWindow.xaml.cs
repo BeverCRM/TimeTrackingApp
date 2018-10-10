@@ -64,6 +64,7 @@ namespace Task_Time_Tracker
 
         private void CreateButton_Click(object sender, RoutedEventArgs e)
         {
+            CreateButton.IsEnabled = false;
             if (IsInformationProvided())
             {
                 if (decimal.TryParse(EstimatedHoursBox.Text, out decimal estimatedHours))
@@ -77,9 +78,14 @@ namespace Task_Time_Tracker
                 }
                 else
                 {
+                    CreateButton.IsEnabled = true;
                     EstimatedHoursBox.Text = "";
                     MessageBox.Show("Please enter a valid estimation of hours!");
                 }
+            }
+            else
+            {
+                CreateButton.IsEnabled = true;
             }
         }
 

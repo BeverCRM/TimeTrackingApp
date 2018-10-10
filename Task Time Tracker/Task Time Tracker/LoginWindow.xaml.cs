@@ -53,6 +53,7 @@ namespace Task_Time_Tracker
 
         private async void Login()
         {
+            LoginButton.IsEnabled = false;
             string userName = LoginBox.Text;
             string password = PasswordBox.Password;
 
@@ -68,6 +69,7 @@ namespace Task_Time_Tracker
 
                 if (connectionStatus.Item1 != "0")
                 {
+                    LoginButton.IsEnabled = true;
                     MessageBox.Show(connectionStatus.Item2);
                 }
                 else

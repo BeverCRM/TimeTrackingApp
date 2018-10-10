@@ -45,6 +45,8 @@ namespace Task_Time_Tracker
 
         private async void GetButton_Click(object sender, RoutedEventArgs e)
         {
+            GetButton.IsEnabled = false;
+
             if (IsInformationProvided() && await IsTfsInformationProvided())
             {
                 List<ProjectTask> tasks = await _crmConnector.GetTfsTasks(((ComboBoxPairs)ProjectComboBox.SelectedItem).Value, TaskIdsBox.Text);
@@ -74,6 +76,10 @@ namespace Task_Time_Tracker
                 }
 
                 Close();
+            }
+            else
+            {
+                GetButton.IsEnabled = true;
             }
         }
 

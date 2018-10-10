@@ -25,6 +25,6 @@
             <TextBlock Grid.Column="0" Text="Password:" Margin="100 15 0 0" />
             <PasswordBox Grid.Column="1" x:Name="PasswordBox" Padding="2" Margin="0 15 100 0" KeyDown="OnPasswordBoxKeyDown" />
         </Grid>
-        <Button Content="Login" Padding="20 2" Margin="0 25 0 0" HorizontalAlignment="Center" Click="LoginButton_Click"/>
+        <Button x:Name ="LoginButton" Content="Login" Padding="20 2" Margin="0 25 0 0" HorizontalAlignment="Center" Click="LoginButton_Click"/>
     </StackPanel>
 </Window>
