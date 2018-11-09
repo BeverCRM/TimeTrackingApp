@@ -95,6 +95,7 @@
       <DependentUpon>TimeTrackerWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utility Functions\CrmConnector.cs" />
+    <Compile Include="Utility Functions\IdleTimeDetector.cs" />
     <Compile Include="Utility Functions\TfsConnector.cs" />
     <Page Include="LoginWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

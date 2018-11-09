@@ -25,6 +25,7 @@ namespace Task_Time_Tracker
         private ObservableCollection<ComboBoxPairs> projectCBP;
 
         private DispatcherTimer timer;
+        private DispatcherTimer idleTimer;
         private int minutes = 0;
         private int hours = 0;
         private int currentMinutes = 0;
@@ -38,11 +39,33 @@ namespace Task_Time_Tracker
             SetNotifyIcon();
 
             timer = new DispatcherTimer();
+            idleTimer = new DispatcherTimer();
 
             _crmConnector = Connector;
 
             RetrieveProjects();
             RetrieveUserName();
+
+            SetIdleTimer();
+        }
+
+        private void SetIdleTimer()
+        {
+            idleTimer.Interval = new TimeSpan(0, 1, 0);
+            idleTimer.Tick += IdleTimer_Tick;
+            idleTimer.Start();
+        }
+
+        private void IdleTimer_Tick(object sender, EventArgs e)
+        {
+            var idleTime = IdleTimeDetector.GetIdleTimeInfo();
+
+            if (idleTime.IdleTime.TotalMinutes >= 20)
+            {
+                MainWindow mainWindow = new MainWindow();
+                Close();
+                mainWindow.Show();
+            }
         }
 
         private void SetNotifyIcon()
@@ -99,7 +122,7 @@ namespace Task_Time_Tracker
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            MessageBoxResult result = System.Windows.MessageBox.Show("Are you sure you want to exit?", "Exit", MessageBoxButton.YesNo);
+            /*MessageBoxResult result = System.Windows.MessageBox.Show("Are you sure you want to exit?", "Exit", MessageBoxButton.YesNo);
 
             switch (result)
             {
@@ -113,6 +136,14 @@ namespace Task_Time_Tracker
                 case MessageBoxResult.No:
                     e.Cancel = true;
                     break;
+            }*/
+
+            timer.Stop();
+            idleTimer.Stop();
+
+            if (currentMinutes != 0)
+            {
+                SendCollectedTime();
             }
 
             base.OnClosing(e);
@@ -152,11 +183,6 @@ namespace Task_Time_Tracker
 
         private async void StartButton_Click(object sender, RoutedEventArgs e)
         {
-            if (DescriptionBox.Text == "")
-            {
-                System.Windows.MessageBox.Show("No description provided. It is recommended to provide description");
-            }
-
             DescriptionBox.IsEnabled = false;
             StartButton.IsEnabled = false;
             StopButton.IsEnabled = true;
@@ -326,7 +352,7 @@ namespace Task_Time_Tracker
             RefreshTasks();
         }
 
-        private void MenuClose_Click(object sender, RoutedEventArgs e)
+        private void MenuExit_Click(object sender, RoutedEventArgs e)
         {
             Close();
         }
@@ -334,8 +360,8 @@ namespace Task_Time_Tracker
         private void MenuSignOut_Click(object sender, RoutedEventArgs e)
         {
             MainWindow mainWindow = new MainWindow();
-            Close();
             mainWindow.Show();
+            Close();
         }
 
         private void MenuNewMeeting_Click(object sender, RoutedEventArgs e)

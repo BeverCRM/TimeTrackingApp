@@ -28,7 +28,7 @@
                 </MenuItem>
                 <Separator />
                 <MenuItem Header="Sign Out" Click="MenuSignOut_Click"/>
-                <MenuItem Header="Close" Click="MenuClose_Click" />
+                <MenuItem Header="Exit" Click="MenuExit_Click" />
             </MenuItem>
         </Menu>
         <Grid Margin="0,0,-6,0" Height="443" VerticalAlignment="Bottom">

@@ -32,10 +32,10 @@ namespace Task_Time_Tracker
             {
                 MessageBox.Show("Instance already running");
                 Close();
-                return false;
+                return true;
             }
 
-            return true;
+            return false;
         }
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
