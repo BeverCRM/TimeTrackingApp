@@ -90,7 +90,7 @@ namespace Task_Time_Tracker
 
         private async Task<bool> TaskAlreadyExists(int tfsId)
         {
-            return await _crmConnector.TfsTaskExists(tfsId);
+            return await _crmConnector.TfsTaskExists(((ComboBoxPairs)ProjectComboBox.SelectedItem).Value, tfsId);
         }
 
         private async Task<bool> OwnerIsCurrentUser(Guid ownerId)

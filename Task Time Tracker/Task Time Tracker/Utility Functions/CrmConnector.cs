@@ -508,7 +508,7 @@ namespace Task_Time_Tracker.Utility_Functions
             return task;
         }
 
-        public async Task<bool> TfsTaskExists(int tfsTaskId)
+        public async Task<bool> TfsTaskExists(Guid projectId, int tfsTaskId)
         {
             QueryExpression projectTaskQuery = new QueryExpression
             {
@@ -519,7 +519,8 @@ namespace Task_Time_Tracker.Utility_Functions
                     FilterOperator = LogicalOperator.And,
                     Conditions =
                     {
-                        new ConditionExpression("bvrcrm_tfsid", ConditionOperator.Equal, tfsTaskId)
+                        new ConditionExpression("bvrcrm_tfsid", ConditionOperator.Equal, tfsTaskId),
+                        new ConditionExpression("bvrcrm_project", ConditionOperator.Equal, projectId)
                     }
                 }
             };
