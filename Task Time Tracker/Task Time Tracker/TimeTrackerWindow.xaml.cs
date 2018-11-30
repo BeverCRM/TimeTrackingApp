@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Squirrel;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -47,6 +48,16 @@ namespace Task_Time_Tracker
             RetrieveUserName();
 
             SetIdleTimer();
+
+            CheckForUpdates();
+        }
+
+        private async Task CheckForUpdates()
+        {
+            using (var updateManager = UpdateManager.GitHubUpdateManager("https://github.com/BeverCRM/TimeTrackingApp"))
+            {
+                await updateManager.Result.UpdateApp();
+            }
         }
 
         private void SetIdleTimer()
